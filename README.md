@@ -1,22 +1,31 @@
 # Machine Learning Operations project
-
 Eva Kaštelan s232469 <br/>
 Zeljko Antunovic s233025 <br/>
 Vilim Branica s243169 <br/>
 Nandor Takacs s232458 <br/>
 
 ## Project description
-This is a group project for the DTU course Machine Learning Operations [DTU:02476](https://skaftenicki.github.io/dtu_mlops/projects/).
+This group project is part of the Machine Learning Operations course at [DTU:02476](https://skaftenicki.github.io/dtu_mlops/projects/). The project focuses on using machine learning to solve a face recognition problem by selecting, fine-tuning, evaluating and deploying a machine learning model. 
 
 ### Goal
-Our project revolves around creating and deploying a Machine Learning model for a face recognition problem.
-The goal for our model is to recognize people based on photos of their faces.
+The primary goal of this project is to develop and deploy a machine learning model that can:
+- Recognize and identify individuals based on facial images.
+- Perform efficiently with a relatively small and balanced dataset.
 
 ### Framework
-We used [PyTorch](https://pytorch.org/) to develop our model. Furthermore, we used a pretrained Resnet34 model from the torchvision library https://pytorch.org/vision/main/models/generated/torchvision.models.resnet34.html. The Transformer framework performs approximately as well as some state-of-the-art Convolutional Neural Network models (CNNs), but requires much less time and computational resources to train.
+We used [PyTorch](https://pytorch.org/) and [torchvision](https://pytorch.org/vision/stable/index.html) to develop our model. Furthermore, we are going to utilize [Pytorch Lightning](https://lightning.ai/docs/pytorch/stable/) for training, validating and testing our model.
 
 ### Data
-Our dataset for the model is the Kaggle dataset [CelebFaces Attributes](https://www.kaggle.com/datasets/jessicali9530/celeba-dataset/data). It consists of over 200k images of celebrities with 40 binary attribute annotations.
+Our dataset is sourced from a publicly available repository: Thinking Neuron. The dataset contains:
+- Approximately 300 images representing 16 unique individuals.
+- Approximately the same number of images per person, ensuring balance and fairness during training.
+
+The dataset is suitable for transfer learning due to its small size, allowing us to leverage the power of pre-trained models for feature extraction and classification.
 
 ### Model
-The model we chose to fine-tune with our dataset is [Vision Transformer(ViT)](https://huggingface.co/docs/transformers/model_doc/vit), which was pretrained on 14 million images and can classify 1000 different items. We could also have used other ViT-type models, such as [ViTMAE](https://huggingface.co/docs/transformers/model_doc/vit_mae) or [ViTMSN](https://huggingface.co/docs/transformers/model_doc/vit_msn). However, for this project we chose the elementary model.
+We chose to fine-tune a pre-trained ResNet34 model from the [torchvision library](https://pytorch.org/vision/main/models/generated/torchvision.models.resnet34.html). The ResNet34 model was originally trained on the ImageNet1k dataset, which consists of 1.2 million labeled images across 1,000 classes. This pretraining provides a strong foundation for transfer learning, especially for tasks with limited data like ours.
+
+Why ResNet34?
+- Residual Connections: ResNet34 utilizes residual blocks, which help mitigate the vanishing gradient problem and enable deeper networks to learn effectively.
+- Pretraining Benefits: The model’s pretrained weights on ImageNet1k allow it to extract generic image features that are transferable to our face recognition task.
+- Efficiency: ResNet34 strikes a balance between performance and computational efficiency, making it suitable for deployment on limited hardware resources.
