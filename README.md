@@ -1,11 +1,11 @@
 # Machine Learning Operations project
-Eva Kaštelan s232469 <br/>
-Zeljko Antunovic s233025 <br/>
-Vilim Branica s243169 <br/>
-Nandor Takacs s232458 <br/>
+Eva Kaštelan - s232469 <br/>
+Zeljko Antunovic - s233025 <br/>
+Vilim Branica - s243169 <br/>
+Nandor Takacs - s232458 <br/>
 
 ## Project description
-This group project is part of the Machine Learning Operations course at [DTU:02476](https://skaftenicki.github.io/dtu_mlops/projects/). The project focuses on using machine learning to solve a face recognition problem by selecting, fine-tuning, evaluating and deploying a machine learning model. 
+This group project is part of the Machine Learning Operations course at [DTU:02476](https://skaftenicki.github.io/dtu_mlops/projects/) for group 28 in January 2025. The project focuses on using machine learning to solve a face recognition problem by selecting, fine-tuning, evaluating and deploying a machine learning model. 
 
 ### Goal
 The primary goal of this project is to develop and deploy a machine learning model that can:
