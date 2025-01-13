@@ -1,8 +1,8 @@
 docs/site/
 
 #data (it is tracked with dvc)
-data/processed/
-data/raw/
+data/processed/**/*.jpg
+data/raw/**/*.jpg
 
 # test cache
 manual_test/
