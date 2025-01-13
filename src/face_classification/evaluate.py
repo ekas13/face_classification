@@ -5,7 +5,16 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor
 import typer
 from model import PretrainedResNet34
+import os
+from typing import Union
 from data import FaceDataset
+
+# Define a specific checkpoint from the checkpoints directory
+model_checkpoint: str = os.path.join(
+    os.path.dirname(__file__), "..", "..", "checkpoints", "model-epoch=01-val_loss=1.68.ckpt"
+    )
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 def evaluate(model_path: str) -> None:
     """Evaluate a trained model using PyTorch Lightning Trainer."""
