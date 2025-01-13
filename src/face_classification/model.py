@@ -4,6 +4,7 @@ import torch
 from torchvision.models import ResNet34_Weights
 from torchmetrics.classification import Accuracy
 import pytorch_lightning as pl
+
 class PretrainedResNet34(pl.LightningModule):
     def __init__(self,  num_classes: int, fine_tuning: bool = True):
         """

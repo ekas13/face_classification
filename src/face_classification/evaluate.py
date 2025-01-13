@@ -5,21 +5,22 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor
 import typer
 from model import PretrainedResNet34
+from data import FaceDataset
 
-def evaluate(model_checkpoint: str) -> None:
+def evaluate(model_path: str) -> None:
     """Evaluate a trained model using PyTorch Lightning Trainer."""
-    print("Evaluating with model checkpoint:", model_checkpoint)
+    print("Evaluating with model:", model_path)
 
     # Define the test dataset and dataloader
-    # TODO: Replace with our dataset
-    test_dataset = torchvision.datasets.CIFAR10(
-        root="../../data", train=False, download=True, transform=ToTensor()
-    )
-    test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    test_dataset = FaceDataset(mode="test")
+    test_dataloader = DataLoader(test_dataset, batch_size=4, shuffle=False)
 
-    model = PretrainedResNet34(num_classes=10)
-    checkpoint = torch.load(model_checkpoint)
+    model = PretrainedResNet34(num_classes=16)
+    # Uncomment these when you have a saved model to load:
+    '''
+    checkpoint = torch.load(model_path)
     model.load_state_dict(checkpoint["state_dict"])
+    '''
 
     # Initialize the PyTorch Lightning trainer
     trainer = Trainer(accelerator="auto")
