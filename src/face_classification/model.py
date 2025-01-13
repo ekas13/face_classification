@@ -2,8 +2,18 @@ from torchvision import models
 import torch.nn as nn
 import torch
 from torchvision.models import ResNet34_Weights
-from torchmetrics.classification import Accuracy
+from torchmetrics import Accuracy, ConfusionMatrix
+
 import pytorch_lightning as pl
+
+# Hyperparameters
+LR = 1e-3
+OPTIMIZER = "adam" # Options: "adam", "sgd"
+OPTIMIZER_OPTIONS = {
+    "adam": torch.optim.Adam,
+    "sgd": torch.optim.SGD
+}
+
 class PretrainedResNet34(pl.LightningModule):
     def __init__(self,  num_classes: int, fine_tuning: bool = True):
         """
@@ -30,27 +40,40 @@ class PretrainedResNet34(pl.LightningModule):
             self.model.fc = nn.Linear(num_features, num_classes)
         
         self.criterion = nn.CrossEntropyLoss()
-        self.acc = Accuracy(task="multiclass", num_classes=num_classes)
+        self.acc = Accuracy(task='multiclass', num_classes=num_classes)
 
     def forward(self, x):
         """Forward pass."""
+
         return self.model(x)
     
-    def training_step(self, batch):
+    def training_step(self, batch, batch_idx):
         """Training step."""
         img, target = batch
         y_pred = self(img)
-        return self.criterion(y_pred, target)
-    
+        loss = self.criterion(y_pred, target)
+        self.log('train_loss', loss)
+        self.log('train_acc', self.acc(y_pred, target))
+        return loss
+    def validation_step(self, batch, batch_idx):
+        """Validation step."""
+        img, target = batch
+        y_pred = self(img)
+        loss = self.criterion(y_pred, target)
+        self.log('val_loss', loss, prog_bar=True)
+        self.log('val_acc', self.acc(y_pred, target), prog_bar=True)
+        return loss
+        
     def test_step(self, batch):
         """Test step."""
         img, target = batch
         y_pred = self(img)
         loss = self.criterion(y_pred, target)
         self.log("test_loss", loss, prog_bar=True, on_epoch=True, on_step=False)
-        self.log("test_acc", self.acc(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)
+        self.log("test_acc", self.acc(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)      
         return loss
     
     def configure_optimizers(self):
         """Configure optimizer."""
-        return torch.optim.Adam(self.parameters(), lr=1e-3)
+        optimizer = OPTIMIZER_OPTIONS[OPTIMIZER](self.parameters(), lr=LR)
+        return optimizer
