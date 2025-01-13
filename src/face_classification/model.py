@@ -2,8 +2,7 @@ from torchvision import models
 import torch.nn as nn
 import torch
 from torchvision.models import ResNet34_Weights
-from torchmetrics import Accuracy, ConfusionMatrix
-
+from torchmetrics import Accuracy
 import pytorch_lightning as pl
 
 # Hyperparameters

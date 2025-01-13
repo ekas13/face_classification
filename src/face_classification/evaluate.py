@@ -1,12 +1,9 @@
 import torch
-import torchvision
 from pytorch_lightning import Trainer
 from torch.utils.data import DataLoader
-from torchvision.transforms import ToTensor
 import typer
 from model import PretrainedResNet34
 import os
-from typing import Union
 from data import FaceDataset
 
 # Define a specific checkpoint from the checkpoints directory
