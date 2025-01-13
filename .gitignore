@@ -4,6 +4,7 @@ docs/site/
 data/processed/**/*.jpg
 data/raw/**/*.jpg
 
+
 # test cache
 manual_test/
 
