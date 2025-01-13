@@ -82,3 +82,28 @@ The directory structure of the project looks like this:
 Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
 a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
 started with Machine Learning Operations (MLOps).
+
+
+## How to run
+### Fetch raw data from Google Cloud
+Follow this for installation guide of gcloud CLI: https://cloud.google.com/sdk/docs/install (ask Eva or Zeljko if you need help).
+Then install  ```dvc``` with ```pip install dvc```.
+After you have ```dvc``` set up, run this command:
+```
+gcloud auth application-default login
+```
+Which should open your browser where you have to login with your google account that you use for Google Cloud Coupon. If you get an error when opening the link, run the command with ```--no-launch-browser``` flag and copy paste the link from the terminal instead.
+Now, you can finally fetch the raw data by running:
+```
+dvc pull --no-run-cache
+```
+Your ```data/raw``` folder should now have ```train``` and ```test``` split.
+
+### Preprocess the data
+To preprocess the data, run:
+```
+invoke preprocess-data
+```
+which will create the ```processed``` folder with 3 subfolders in it, ```train```, ```test```,  ```val```. All images in these folders are resized to ```(256, 256)``` so they have a uniform size across the dataset.
+
+### TO BE CONTINUED
