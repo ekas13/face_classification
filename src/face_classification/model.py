@@ -1,8 +1,10 @@
 from torchvision import models
 import torch.nn as nn
+import torch
 from torchvision.models import ResNet34_Weights
-class PretrainedResNet34(nn.Module):
-    def __init__(self, fine_tuning: bool = True, num_classes: int = 2):
+import pytorch_lightning as pl
+class PretrainedResNet34(pl.LightningModule):
+    def __init__(self,  num_classes: int, fine_tuning: bool = True):
         """
         Initializes the pre-trained ResNet34Model with specified arguments.
         Args:
@@ -25,6 +27,19 @@ class PretrainedResNet34(nn.Module):
             )
         else:
             self.model.fc = nn.Linear(num_features, num_classes)
+        
+        self.criterion = nn.CrossEntropyLoss()
 
     def forward(self, x):
+        """Forward pass."""
         return self.model(x)
+    
+    def training_step(self, batch):
+        """Training step."""
+        img, target = batch
+        y_pred = self(img)
+        return self.criterion(y_pred, target)
+
+    def configure_optimizers(self):
+        """Configure optimizer."""
+        return torch.optim.Adam(self.parameters(), lr=1e-3)
