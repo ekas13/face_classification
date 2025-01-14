@@ -33,3 +33,7 @@ select = ["I", "D101"]
 
 [tool.coverage.run]
 omit = ["tests/*"]
+
+[project.scripts]
+train = "face_classification.train:train"
+evaluate = "face_classification.evaluate:run_evaluate"
