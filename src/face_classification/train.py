@@ -1,15 +1,13 @@
-import os
-
 import torch
 import typer
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from torchvision import datasets, transforms
+from pytorch_lightning import Trainer
+from pytorch_lightning.callbacks import ModelCheckpoint
 
-from face_classification.model import PretrainedResNet34
-from face_classification.visualize import plot_train_acc, plot_train_loss, plot_val_acc, plot_val_loss
-from face_classification.metric_tracker import MetricTracker
-
+from model import PretrainedResNet34
+from metric_tracker import MetricTracker
 
 transform = transforms.Compose([
     transforms.Resize((256, 256)),
