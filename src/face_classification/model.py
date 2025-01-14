@@ -4,7 +4,10 @@ import torch.nn as nn
 from torchmetrics import Accuracy
 from torchvision import models
 from torchvision.models import ResNet34_Weights
+# from torchmetrics import Accuracy
+import pytorch_lightning as pl
 
+from utils import accuracy
 # Hyperparameters
 LR = 1e-3
 OPTIMIZER = "adam"  # Options: "adam", "sgd"
@@ -53,7 +56,7 @@ class PretrainedResNet34(pl.LightningModule):
             self.model.fc = nn.Linear(num_features, num_classes)
 
         self.criterion = nn.CrossEntropyLoss()
-        self.acc = Accuracy(task="multiclass", num_classes=num_classes)
+        # self.acc = Accuracy(task='multiclass', num_classes=num_classes)
 
     def forward(self, x):
         """Forward pass."""
@@ -65,8 +68,8 @@ class PretrainedResNet34(pl.LightningModule):
         img, target = batch
         y_pred = self(img)
         loss = self.criterion(y_pred, target)
-        self.log("train_loss", loss)
-        self.log("train_acc", self.acc(y_pred, target))
+        self.log('train_loss', loss, prog_bar=True, on_epoch=True, on_step=False)
+        self.log('train_acc', accuracy(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -74,8 +77,8 @@ class PretrainedResNet34(pl.LightningModule):
         img, target = batch
         y_pred = self(img)
         loss = self.criterion(y_pred, target)
-        self.log("val_loss", loss, prog_bar=True)
-        self.log("val_acc", self.acc(y_pred, target), prog_bar=True)
+        self.log('val_loss', loss, prog_bar=True, on_epoch=True, on_step=False)
+        self.log('val_acc', accuracy(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)
         return loss
 
     def test_step(self, batch):
@@ -84,7 +87,7 @@ class PretrainedResNet34(pl.LightningModule):
         y_pred = self(img)
         loss = self.criterion(y_pred, target)
         self.log("test_loss", loss, prog_bar=True, on_epoch=True, on_step=False)
-        self.log("test_acc", self.acc(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)
+        self.log("test_acc", accuracy(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)      
         return loss
 
     def configure_optimizers(self):
