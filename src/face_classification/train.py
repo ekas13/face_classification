@@ -2,11 +2,11 @@ import os
 
 import torch
 import typer
-from model import PretrainedResNet34
+from face_classification.model import PretrainedResNet34
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from torchvision import datasets, transforms
-from visualize import plot_accuracy, plot_loss
+from face_classification.visualize import plot_accuracy, plot_loss
 
 transform = transforms.Compose([transforms.ToTensor()])
 
