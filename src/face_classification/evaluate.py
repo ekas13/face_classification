@@ -1,13 +1,13 @@
 import os
-
 import sys
+
 import torch
 import typer
-from face_classification.model import PretrainedResNet34
 from pytorch_lightning import Trainer
 from torch.utils.data import DataLoader
 
 from face_classification.data import FaceDataset
+from face_classification.model import PretrainedResNet34
 
 # Define a specific checkpoint from the checkpoints directory
 model_checkpoint: str = os.path.join(
@@ -16,6 +16,7 @@ model_checkpoint: str = os.path.join(
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 app = typer.Typer()
+
 
 @app.command()
 def evaluate(model_path: str) -> None:
@@ -38,12 +39,14 @@ def evaluate(model_path: str) -> None:
     # Evaluate the model
     trainer.test(model, dataloaders=test_dataloader)
 
+
 def run_evaluate():
     if len(sys.argv) < 2:
         model_path = None
     else:
         model_path = sys.argv[1]
     evaluate(model_path)
+
 
 if __name__ == "__main__":
     typer.run(evaluate)
