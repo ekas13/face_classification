@@ -1,25 +1,24 @@
 import torch
 import typer
+from metric_tracker import MetricTracker
+from model import PretrainedResNet34
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import Callback, ModelCheckpoint
 from torchvision import datasets, transforms
-from pytorch_lightning import Trainer
-from pytorch_lightning.callbacks import ModelCheckpoint
 
-from model import PretrainedResNet34
-from metric_tracker import MetricTracker
-
-transform = transforms.Compose([
-    transforms.Resize((256, 256)),
-    transforms.ToTensor(),
-])
+transform = transforms.Compose(
+    [
+        transforms.Resize((256, 256)),
+        transforms.ToTensor(),
+    ]
+)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 app = typer.Typer()
 
 # Hyperparameters
 BATCH_SIZE = 32
-EPOCHS = 10
+EPOCHS = 2
 
 
 @app.command()
