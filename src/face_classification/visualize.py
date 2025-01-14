@@ -1,5 +1,7 @@
 import os
+
 import matplotlib.pyplot as plt
+
 
 def plot_loss(statistics, figures_path):
     plt.figure(figsize=(10, 5))
@@ -8,6 +10,7 @@ def plot_loss(statistics, figures_path):
     plt.title("Loss")
     plt.legend()
     plt.savefig(os.path.join(figures_path, "loss.png"))
+
 
 def plot_accuracy(statistics, figures_path):
     plt.figure(figsize=(10, 5))

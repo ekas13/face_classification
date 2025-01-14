@@ -1,15 +1,17 @@
-from pathlib import Path
-import typer
-from torch.utils.data import Dataset
-from PIL import Image
-import torch
 import os
+from pathlib import Path
+
+import torch
+import typer
+from PIL import Image
+from torch.utils.data import Dataset
 from torchvision.transforms import ToTensor
+
 
 class FaceDataset(Dataset):
     """My custom dataset for loading face images and their targets."""
 
-    def __init__(self, data_path: str="data/processed", transform=ToTensor(), mode: str="train") -> None:
+    def __init__(self, data_path: str = "data/processed", transform=ToTensor(), mode: str = "train") -> None:
         """Initialize the dataset with the preprocessed data path.
 
         Args:
@@ -57,7 +59,7 @@ class FaceDataset(Dataset):
 
 def preprocess(raw_data_path: Path, output_folder: Path) -> None:
     """Preprocess the raw data so we have a cleaner folder structure of our data, with class labels contained in image names.
-    
+
     Args:
             index (int): Index of the sample.
 
@@ -115,6 +117,7 @@ def preprocess(raw_data_path: Path, output_folder: Path) -> None:
                     resized_image.save(test_output_folder / new_name)
 
     print(f"Data preprocessing complete. Preprocessed data saved to {output_folder}")
+
 
 if __name__ == "__main__":
     typer.run(preprocess)
