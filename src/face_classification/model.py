@@ -62,32 +62,27 @@ class PretrainedResNet34(pl.LightningModule):
 
         return self.model(x)
 
-    def training_step(self, batch, batch_idx):
-        """Training step."""
+
+    def _step(self, batch, mode):
+        """Common step function."""
         img, target = batch
         y_pred = self(img)
         loss = self.criterion(y_pred, target)
-        self.log("train_loss", loss, prog_bar=True, on_epoch=True, on_step=False)
-        self.log("train_acc", accuracy(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)
+        self.log(f"{mode}_loss", loss, prog_bar=True, on_epoch=True, on_step=False)
+        self.log(f"{mode}_acc", accuracy(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)
         return loss
+
+    def training_step(self, batch, batch_idx):
+        """Training step."""
+        return self._step(batch, "train")
 
     def validation_step(self, batch, batch_idx):
         """Validation step."""
-        img, target = batch
-        y_pred = self(img)
-        loss = self.criterion(y_pred, target)
-        self.log("val_loss", loss, prog_bar=True, on_epoch=True, on_step=False)
-        self.log("val_acc", accuracy(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)
-        return loss
+        return self._step(batch, "val")
 
-    def test_step(self, batch):
+    def test_step(self, batch, batch_idx):
         """Test step."""
-        img, target = batch
-        y_pred = self(img)
-        loss = self.criterion(y_pred, target)
-        self.log("test_loss", loss, prog_bar=True, on_epoch=True, on_step=False)
-        self.log("test_acc", accuracy(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)
-        return loss
+        return self._step(batch, "test")
 
     def configure_optimizers(self):
         """Configure optimizer."""
