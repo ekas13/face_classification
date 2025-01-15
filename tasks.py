@@ -45,11 +45,14 @@ def train(ctx: Context) -> None:
     ctx.run(f"python src/{PROJECT_NAME}/train.py", echo=True, pty=not WINDOWS)
 
 
+# call with invoke evaluate --model-path = <path here>
 @task
-def evaluate(ctx: Context) -> None:
-    """Evaluate a trained model."""
-    ctx.run(f"python src/{PROJECT_NAME}/evaluate.py models/model.pth", echo=True, pty=not WINDOWS)
-
+def evaluate(ctx: Context, model_path: str = None) -> None:
+    """Run evaluation with optional model path."""
+    if model_path is None:
+        ctx.run(f"python src/{PROJECT_NAME}/evaluate.py models/model.pth", echo=True, pty=not WINDOWS)
+    else:
+        ctx.run(f"python src/{PROJECT_NAME}/evaluate.py {model_path}", echo=True, pty=not WINDOWS)
 
 @task
 def test(ctx: Context) -> None:

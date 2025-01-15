@@ -6,14 +6,13 @@ import typer
 from pytorch_lightning import Trainer
 from torch.utils.data import DataLoader
 
-from face_classification.data import FaceDataset
-from face_classification.model import PretrainedResNet34
+from data import FaceDataset
+from model import PretrainedResNet34
 
 # Define a specific checkpoint from the checkpoints directory
 model_checkpoint: str = os.path.join(
     os.path.dirname(__file__), "..", "..", "checkpoints", "model-epoch=01-val_loss=1.68.ckpt"
 )
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 app = typer.Typer()
 

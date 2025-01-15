@@ -2,20 +2,29 @@ import os
 
 import matplotlib.pyplot as plt
 
+figures_path = os.path.join(os.path.dirname(__file__), "..", "..", "reports", "figures")
 
-def plot_loss(statistics, figures_path):
+
+def plot_train_loss(statistics):
+    _plot(statistics["train_loss"], "Train", "Loss", figures_path)
+
+
+def plot_train_acc(statistics):
+    _plot(statistics["train_acc"], "Train", "Accuracy", figures_path)
+
+
+def plot_val_loss(statistics):
+    _plot(statistics["val_loss"], "Validation", "Loss", figures_path)
+
+
+def plot_val_acc(statistics):
+    _plot(statistics["val_acc"], "Validation", "Accuracy", figures_path)
+
+
+def _plot(y, train_type, metric_type, figures_path):
     plt.figure(figsize=(10, 5))
-    plt.plot(statistics["train_loss"], label="Train Loss")
-    plt.plot(statistics["val_loss"], label="Validation Loss")
-    plt.title("Loss")
+    x = range(1, len(y) + 1)
+    plt.plot(x, y, label=f"{train_type} {metric_type}")
+    plt.title(f"{train_type} {metric_type}")
     plt.legend()
-    plt.savefig(os.path.join(figures_path, "loss.png"))
-
-
-def plot_accuracy(statistics, figures_path):
-    plt.figure(figsize=(10, 5))
-    plt.plot(statistics["train_acc"], label="Train Accuracy")
-    plt.plot(statistics["val_acc"], label="Validation Accuracy")
-    plt.title("Accuracy")
-    plt.legend()
-    plt.savefig(os.path.join(figures_path, "accuracy.png"))
+    plt.savefig(os.path.join(figures_path, f"{train_type}_{metric_type}.png"))

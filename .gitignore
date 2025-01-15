@@ -183,3 +183,9 @@ cython_debug/
 
 # Pytorch Lightning logs
 lightning_logs/
+
+google-cloud-sdk/
+*.ckpt
+.gz
+data/
+/checkpoints

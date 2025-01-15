@@ -1,9 +1,11 @@
+# from torchmetrics import Accuracy
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 from torchmetrics import Accuracy
 from torchvision import models
 from torchvision.models import ResNet34_Weights
+from utils import accuracy
 
 # Hyperparameters
 LR = 1e-3
@@ -53,39 +55,34 @@ class PretrainedResNet34(pl.LightningModule):
             self.model.fc = nn.Linear(num_features, num_classes)
 
         self.criterion = nn.CrossEntropyLoss()
-        self.acc = Accuracy(task="multiclass", num_classes=num_classes)
+        # self.acc = Accuracy(task='multiclass', num_classes=num_classes)
 
     def forward(self, x):
         """Forward pass."""
 
         return self.model(x)
 
-    def training_step(self, batch, batch_idx):
-        """Training step."""
+
+    def _step(self, batch, mode):
+        """Common step function."""
         img, target = batch
         y_pred = self(img)
         loss = self.criterion(y_pred, target)
-        self.log("train_loss", loss)
-        self.log("train_acc", self.acc(y_pred, target))
+        self.log(f"{mode}_loss", loss, prog_bar=True, on_epoch=True, on_step=False)
+        self.log(f"{mode}_acc", accuracy(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)
         return loss
+
+    def training_step(self, batch, batch_idx):
+        """Training step."""
+        return self._step(batch, "train")
 
     def validation_step(self, batch, batch_idx):
         """Validation step."""
-        img, target = batch
-        y_pred = self(img)
-        loss = self.criterion(y_pred, target)
-        self.log("val_loss", loss, prog_bar=True)
-        self.log("val_acc", self.acc(y_pred, target), prog_bar=True)
-        return loss
+        return self._step(batch, "val")
 
-    def test_step(self, batch):
+    def test_step(self, batch, batch_idx):
         """Test step."""
-        img, target = batch
-        y_pred = self(img)
-        loss = self.criterion(y_pred, target)
-        self.log("test_loss", loss, prog_bar=True, on_epoch=True, on_step=False)
-        self.log("test_acc", self.acc(y_pred, target), prog_bar=True, on_epoch=True, on_step=False)
-        return loss
+        return self._step(batch, "test")
 
     def configure_optimizers(self):
         """Configure optimizer."""
