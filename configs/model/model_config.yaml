@@ -1,0 +1,5 @@
+fine_tuning: True
+num_classes: 16
+optimizer: 
+  type: 'adam' # Options: "adam", "sgd"
+  lr: 0.001
