@@ -1,5 +1,5 @@
 from pytorch_lightning.callbacks import Callback
-from visualize import plot_train_acc, plot_train_loss, plot_val_acc, plot_val_loss
+from .visualize import plot_train_acc, plot_train_loss, plot_val_acc, plot_val_loss
 
 
 # This class implements the callbacks that Pytorch lightning uses to track the metrics of the model during training and validation

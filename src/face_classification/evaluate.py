@@ -6,8 +6,8 @@ import typer
 from pytorch_lightning import Trainer
 from torch.utils.data import DataLoader
 
-from data import FaceDataset
-from model import PretrainedResNet34
+from .data import FaceDataset
+from .model import PretrainedResNet34
 
 # Define a specific checkpoint from the checkpoints directory
 model_checkpoint: str = os.path.join(

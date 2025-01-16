@@ -3,9 +3,9 @@ import typer
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 
-from metric_tracker import MetricTracker
-from model import PretrainedResNet34
-from data import FaceDataset
+from .metric_tracker import MetricTracker
+from .model import PretrainedResNet34
+from .data import FaceDataset
 
 app = typer.Typer()
 

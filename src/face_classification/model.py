@@ -5,7 +5,7 @@ import torch.nn as nn
 from torchmetrics import Accuracy
 from torchvision import models
 from torchvision.models import ResNet34_Weights
-from utils import accuracy
+from .utils import accuracy
 
 # Hyperparameters
 LR = 1e-3
