@@ -189,3 +189,6 @@ google-cloud-sdk/
 .gz
 data/
 /checkpoints
+
+# Wandb output
+wandb/
