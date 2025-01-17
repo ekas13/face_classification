@@ -1,19 +1,22 @@
 import torch
 import typer
 import hydra
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import OmegaConf
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 
-from metric_tracker import MetricTracker
-from model import PretrainedResNet34
-from data import FaceDataset
+from face_classification.metric_tracker import MetricTracker
+from face_classification.model import PretrainedResNet34
+from face_classification.data import FaceDataset
 
 app = typer.Typer()
 
-def train(cfg: DictConfig) -> None:
+@app.command()
+def train(config_name: str = "default_config") -> None:
     """Train a model on CIFAR10."""
     print("Training day and night")
+    with hydra.initialize(config_path="../../configs", version_base = None, job_name="train_model"):
+        cfg = hydra.compose(config_name=config_name)
 
     print(f"configuration: \n {OmegaConf.to_yaml(cfg)}")
     # Set random seed for reproducibility
@@ -39,11 +42,5 @@ def train(cfg: DictConfig) -> None:
     trainer.fit(model, train_dataloader, val_dataloaders=val_dataloader)
     print("Training finished")
 
-@app.command()
-def main(config_name: str = "default_config"):
-    hydra.initialize(config_path="../../configs")
-    cfg = hydra.compose(config_name=config_name)
-    train(cfg)
-
 if __name__ == "__main__":
-    typer.run(main)
+    typer.run(train)

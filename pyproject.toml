@@ -35,5 +35,5 @@ select = ["I", "D101"]
 omit = ["tests/*"]
 
 [project.scripts]
-train = "src.face_classification.train:main"
-evaluate = "src.face_classification.evaluate:main"
+train = "face_classification.train:train"
+evaluate = "face_classification.evaluate:evaluate"

@@ -5,8 +5,8 @@ import torch.nn as nn
 from torchmetrics import Accuracy
 from torchvision import models
 from torchvision.models import ResNet34_Weights
-from utils import accuracy
 from omegaconf import DictConfig
+from face_classification.utils import accuracy
 
 # Optimizer options
 OPTIMIZER_OPTIONS = {"adam": torch.optim.Adam, "sgd": torch.optim.SGD}

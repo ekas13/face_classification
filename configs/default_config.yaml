@@ -2,5 +2,4 @@ defaults:
     - model: model_config.yaml
     - train: train_config.yaml
     - evaluate: evaluate_config.yaml
-
 seed: 73
