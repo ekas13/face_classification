@@ -36,4 +36,4 @@ omit = ["tests/*"]
 
 [project.scripts]
 train = "face_classification.train:train"
-evaluate = "face_classification.evaluate:run_evaluate"
+evaluate = "face_classification.evaluate:evaluate"
