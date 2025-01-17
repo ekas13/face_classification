@@ -3,3 +3,5 @@ epochs: 10
 num_workers: 4
 save_top_k: 3
 mode: "max"
+USE_CHROMIUM_PROFILER: True
+USE_TENSORFLOW_PROFILER: True

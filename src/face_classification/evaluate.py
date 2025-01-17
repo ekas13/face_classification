@@ -12,11 +12,6 @@ from torch.utils.data import DataLoader
 from face_classification.data import FaceDataset
 from face_classification.model import PretrainedResNet34
 
-# Define a specific checkpoint from the checkpoints directory
-model_checkpoint: str = os.path.join(
-    os.path.dirname(__file__), "..", "..", "checkpoints", "model-epoch=01-val_loss=1.68.ckpt"
-)
-
 app = typer.Typer()
 @app.command()
 def evaluate(model_path: str, config_name: str = "default_config") -> None:

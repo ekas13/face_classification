@@ -187,4 +187,5 @@ lightning_logs/
 google-cloud-sdk/
 *.ckpt
 .gz
-/checkpoints
+data/raw/
+data/processed/
