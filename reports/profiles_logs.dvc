@@ -1,0 +1,6 @@
+outs:
+- md5: 4a16cd96839aa6cf1a2a321c78315034.dir
+  size: 29856983
+  nfiles: 2
+  hash: md5
+  path: profiles_logs

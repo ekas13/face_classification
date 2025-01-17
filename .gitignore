@@ -189,4 +189,3 @@ google-cloud-sdk/
 .gz
 data/raw/
 data/processed/
-/checkpoints
