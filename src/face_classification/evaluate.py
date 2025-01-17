@@ -9,11 +9,6 @@ from torch.utils.data import DataLoader
 from data import FaceDataset
 from model import PretrainedResNet34
 
-# Define a specific checkpoint from the checkpoints directory
-model_checkpoint: str = os.path.join(
-    os.path.dirname(__file__), "..", "..", "checkpoints", "model-epoch=01-val_loss=1.68.ckpt"
-)
-
 app = typer.Typer()
 
 
