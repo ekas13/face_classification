@@ -29,12 +29,12 @@ def train(config_name: str = "default_config") -> None:
     torch.manual_seed(cfg.seed)
     hparams = cfg.train
 
-    if hparams.USE_TENSORFLOW_PROFILER:
+    if hparams.use_tensorflow_profiler:
         with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True, profile_memory=True, on_trace_ready=tensorboard_trace_handler(f"reports/profiler_logs/tensorboard/PretrainedResNet34_train_{hparams.epochs}_epoch")) as prof:
             run_training(cfg, hparams)
         print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
         print(prof.key_averages(group_by_input_shape=True).table(sort_by="cpu_time_total", row_limit=30))
-    if hparams.USE_CHROMIUM_PROFILER:
+    if hparams.use_chromium_profiler:
         with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True, profile_memory=True) as prof:
             run_training(cfg, hparams)
         print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
@@ -43,7 +43,7 @@ def train(config_name: str = "default_config") -> None:
         os.makedirs(logdir, exist_ok=True)
         filename= f"{logdir}/train_trace.json"
         prof.export_chrome_trace(filename)
-    if not hparams.USE_CHROMIUM_PROFILER and not hparams.USE_TENSORFLOW_PROFILER:
+    if not hparams.use_chromium_profiler and not hparams.use_tensorflow_profiler:
         run_training(cfg, hparams)
 
 def run_training(cfg, hparams) -> None:
