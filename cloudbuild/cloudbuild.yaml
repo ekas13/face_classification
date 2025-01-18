@@ -5,15 +5,15 @@ steps:
     'build',
     '.',
     '-t',
-    'europe-west3-docker.pkg.dev/$PROJECT_ID/group28-repository/created-docker-image',
+    'europe-west3-docker.pkg.dev/$PROJECT_ID/group28-repository/created-docker-image:$SHORT_SHA',
     '-f',
-    'dockerfiles/train.dckerfile'
+    'dockerfiles/train.dockerfile'
   ]
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push container image'
   args: [
     'push',
-    'europe-west3-docker.pkg.dev/$PROJECT_ID/group28-repository/created-docker-image'
+    'europe-west3-docker.pkg.dev/$PROJECT_ID/group28-repository/created-docker-image:$SHORT_SHA'
   ]
 options:
   logging: CLOUD_LOGGING_ONLY
