@@ -1,4 +1,10 @@
 import logging
+import os
+import sys
+
+import hydra
+from omegaconf import OmegaConf
+
 import torch
 import typer
 from pytorch_lightning import Trainer
@@ -8,31 +14,36 @@ from pytorch_lightning.loggers import WandbLogger
 from data import FaceDataset
 from model import PretrainedResNet34
 
+from face_classification.data import FaceDataset
+from face_classification.model import PretrainedResNet34
+
 app = typer.Typer()
-
 @app.command()
-def evaluate(model_path: str) -> None:
+def evaluate(model_path: str, config_name: str = "default_config") -> None:
     """Evaluate a trained model using PyTorch Lightning Trainer."""
-
-    # Initialize logging
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
-    logger.info("Evaluating with model:", model_path)
+    logger.info(f"Evaluating with model: {model_path}")
 
-    map_location = "cuda" if torch.cuda.is_available() else "cpu"
+    with hydra.initialize(config_path="../../configs", version_base = None, job_name="evaluate_model"):
+        cfg = hydra.compose(config_name=config_name)
+
+    logger.info(f"Configuration: \n {OmegaConf.to_yaml(cfg)}")
+    # Set random seed for reproducibility
+    torch.manual_seed(cfg.seed)
+    hparams = cfg.evaluate
 
     # Define the test dataset and dataloader
     test_dataset = FaceDataset(mode="test")
-    test_dataloader = DataLoader(test_dataset, batch_size=4, shuffle=False)
+    test_dataloader = DataLoader(test_dataset, batch_size=hparams.batch_size, shuffle=False)
 
-    model = PretrainedResNet34(num_classes=16)
-    # Uncomment these when you have a saved model to load:
+    model = PretrainedResNet34(cfg)
     if model_path:
-        checkpoint = torch.load(model_path, map_location=map_location)
+        checkpoint = torch.load(model_path)
         model.load_state_dict(checkpoint["state_dict"])
 
     # Initialize the PyTorch Lightning trainer
-    trainer = Trainer(accelerator="auto", logger=WandbLogger(project="face_classification"))
+    trainer = Trainer(accelerator=hparams.accelerator, logger=WandbLogger(project="face_classification"))
 
     # Evaluate the model
     trainer.test(model, dataloaders=test_dataloader)
