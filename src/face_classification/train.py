@@ -53,7 +53,9 @@ def run_training(cfg, hparams) -> None:
     train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers)
     val_dataloader = torch.utils.data.DataLoader(val_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers)
 
-    model = PretrainedResNet34(cfg)
+    hparams_model = cfg.model
+    optimizer = hparams_model.optimizer
+    model = PretrainedResNet34(num_classes = hparams_model.num_classes, fine_tuning = hparams_model.fine_tuning, optimizer_type = optimizer.type, optimizer_lr = optimizer.lr)
     checkpoint_callback = ModelCheckpoint(
         monitor="val_acc",
         dirpath="models/checkpoints/",

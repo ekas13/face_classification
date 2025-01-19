@@ -24,40 +24,39 @@ class PretrainedResNet34(pl.LightningModule):
         acc (torchmetrics.Accuracy): Metric for calculating accuracy during training, validation, and testing.
 
     Args:
-        cfg (DictConfig): Configuration object containing model hyperparameters.
-            - `cfg.model.num_classes`: The number of classes for the classification task. For binary classification,
-                                    the final layer uses a sigmoid activation, while for multiclass classification,
-                                    it uses a linear layer with the number of specified classes.
-            - `cfg.model.fine_tuning`: If True, freezes the weights of the convolutional layers and updates
-                                      only the fully connected layers. 
-            - `cfg.model.optimizer`: The optimizer configuration, including the type ("adam" or "sgd") 
-                                      and the learning rate.
+        num_classes (int): The number of classes for the classification task. For binary classification,
+                        the final layer uses a sigmoid activation, while for multiclass classification,
+                        it uses a linear layer with the number of specified classes.
+        fine_tuning (bool, optional): If True, freezes the weights of the convolutional layers and updates
+                                    only the fully connected layers. Defaults to True.
    
     """
 
-    def __init__(self, cfg: DictConfig):
+    def __init__(self, num_classes: int, fine_tuning: bool = True, optimizer_type: str = 'adam', optimizer_lr: float = 0.001):
         """
         Initializes the pre-trained ResNet34Model with specified arguments.
         Args:
-            cfg (DictConfig): Configuration object containing model hyperparameters.
+            fine_tuning (bool): If True, freezes convolutional layer weights (fine-tuning model).
+            num_classes (int): Number of classes for the output layer.
         """
         super(PretrainedResNet34, self).__init__()
 
         self.model = models.resnet34(weights=ResNet34_Weights.IMAGENET1K_V1, progress=True)
 
-        if cfg.model.fine_tuning:
+        if fine_tuning:
             for param in self.model.parameters():
                 param.requires_grad = False
 
         num_features = self.model.fc.in_features
-        if cfg.model.num_classes == 2:
+        if num_classes == 2:
             self.model.fc = nn.Sequential(nn.Linear(num_features, 1), nn.Sigmoid())
         else:
-            self.model.fc = nn.Linear(num_features, cfg.model.num_classes )
+            self.model.fc = nn.Linear(num_features, num_classes )
 
         self.criterion = nn.CrossEntropyLoss()
         # self.acc = Accuracy(task='multiclass', num_classes=num_classes)
-        self.optimizer_cfg = cfg.model.optimizer
+        self.optimizer_type = optimizer_type
+        self.optimizer_lr = optimizer_lr
 
     def forward(self, x):
         """Forward pass."""
@@ -88,5 +87,5 @@ class PretrainedResNet34(pl.LightningModule):
 
     def configure_optimizers(self):
         """Configure optimizer."""
-        optimizer = OPTIMIZER_OPTIONS[self.optimizer_cfg.type](self.parameters(), lr=self.optimizer_cfg.lr)
+        optimizer = OPTIMIZER_OPTIONS[self.optimizer_type](self.parameters(), lr=self.optimizer_lr)
         return optimizer
