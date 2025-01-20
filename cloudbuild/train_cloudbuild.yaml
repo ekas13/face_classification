@@ -1,4 +1,11 @@
 steps:
+# Setup Env
+- id: 'setup-environment'
+  name: python
+  entrypoint: bash
+  args: ['-c', 'pip install -U dvc dvc[gs]; dvc pull;']
+
+# Build & Push Trainer
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build container image'
   args: [
