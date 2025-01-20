@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import logging
 import torch
 import typer
 from PIL import Image
@@ -66,7 +67,11 @@ def preprocess(raw_data_path: Path, output_folder: Path) -> None:
         Returns:
             tuple: (image, target) where target is the class label.
     """
-    print("Preprocessing data...")
+
+    # Initialize logging
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.INFO)
+    logger.info("Preprocessing data...")
 
     # Define paths for train, test, and val folders
     train_output_folder = output_folder / "train"
@@ -116,7 +121,7 @@ def preprocess(raw_data_path: Path, output_folder: Path) -> None:
                     resized_image = img.resize((256, 256))
                     resized_image.save(test_output_folder / new_name)
 
-    print(f"Data preprocessing complete. Preprocessed data saved to {output_folder}")
+    logger.info(f"Data preprocessing complete. Preprocessed data saved to {output_folder}")
 
 
 if __name__ == "__main__":
