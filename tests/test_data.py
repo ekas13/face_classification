@@ -4,7 +4,7 @@ import pytest
 import torch
 from torch.utils.data import Dataset
 
-from face_classification.data import FaceDataset
+from src.face_classification.data import FaceDataset
 
 
 @pytest.mark.skipif(not os.path.exists("data/processed"), reason="Data files not found")
