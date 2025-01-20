@@ -3,13 +3,12 @@ import os
 import sys
 
 import hydra
-from omegaconf import OmegaConf
-
 import torch
 import typer
+from omegaconf import OmegaConf
 from pytorch_lightning import Trainer
-from torch.utils.data import DataLoader
 from pytorch_lightning.loggers import WandbLogger
+from torch.utils.data import DataLoader
 
 from src.face_classification.data import FaceDataset
 from src.face_classification.model import PretrainedResNet34

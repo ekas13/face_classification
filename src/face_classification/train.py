@@ -1,18 +1,19 @@
+import logging
+import os
+
+import hydra
 import torch
 import typer
-import wandb
-import logging
-import hydra
 from omegaconf import OmegaConf
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
-from torch.profiler import profile, ProfilerActivity, tensorboard_trace_handler
+from torch.profiler import ProfilerActivity, profile, tensorboard_trace_handler
 
+import wandb
+from src.face_classification.data import FaceDataset
 from src.face_classification.metric_tracker import MetricTracker
 from src.face_classification.model import PretrainedResNet34
-from src.face_classification.data import FaceDataset
-import os
 
 app = typer.Typer()
 

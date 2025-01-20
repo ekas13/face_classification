@@ -100,6 +100,10 @@ class TestTrainingProcess:
         # Initialize the model
         model = PretrainedResNet34(config)
 
+        # Set macos to cpu to avoid issues with MPS
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = model.to(device)
+
         # Save a copy of the initial model parameters
         initial_params = {name: param.clone() for name, param in model.named_parameters() if param.requires_grad}
 

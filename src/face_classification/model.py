@@ -2,10 +2,11 @@
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
+from omegaconf import DictConfig
 from torchmetrics import Accuracy
 from torchvision import models
 from torchvision.models import ResNet34_Weights
-from omegaconf import DictConfig
+
 from src.face_classification.utils import accuracy
 
 # Optimizer options
