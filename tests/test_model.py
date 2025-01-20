@@ -2,7 +2,7 @@ import hydra
 import torch
 from pytorch_lightning import Trainer
 
-from src.face_classification.model import PretrainedResNet34
+from face_classification.model import PretrainedResNet34
 
 with hydra.initialize(config_path="../configs", version_base=None, job_name="train_model"):
     config = hydra.compose(config_name="default_config")

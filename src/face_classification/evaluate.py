@@ -11,9 +11,6 @@ from pytorch_lightning import Trainer
 from torch.utils.data import DataLoader
 from pytorch_lightning.loggers import WandbLogger
 
-from data import FaceDataset
-from model import PretrainedResNet34
-
 from face_classification.data import FaceDataset
 from face_classification.model import PretrainedResNet34
 
