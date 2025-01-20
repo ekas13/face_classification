@@ -1,0 +1,10 @@
+[run]
+source = src/face_classification
+omit =
+    */_remote_module_non_scriptable.py,/tmp/*
+
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
