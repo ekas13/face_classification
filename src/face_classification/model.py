@@ -11,6 +11,7 @@ from src.face_classification.utils import accuracy
 # Optimizer options
 OPTIMIZER_OPTIONS = {"adam": torch.optim.Adam, "sgd": torch.optim.SGD}
 
+
 class PretrainedResNet34(pl.LightningModule):
     """
     A PyTorch Lightning module for training and fine-tuning a pre-trained ResNet34 model.
@@ -29,10 +30,10 @@ class PretrainedResNet34(pl.LightningModule):
                                     the final layer uses a sigmoid activation, while for multiclass classification,
                                     it uses a linear layer with the number of specified classes.
             - `cfg.model.fine_tuning`: If True, freezes the weights of the convolutional layers and updates
-                                      only the fully connected layers. 
-            - `cfg.model.optimizer`: The optimizer configuration, including the type ("adam" or "sgd") 
+                                      only the fully connected layers.
+            - `cfg.model.optimizer`: The optimizer configuration, including the type ("adam" or "sgd")
                                       and the learning rate.
-   
+
     """
 
     def __init__(self, cfg: DictConfig):
@@ -53,7 +54,7 @@ class PretrainedResNet34(pl.LightningModule):
         if cfg.model.num_classes == 2:
             self.model.fc = nn.Sequential(nn.Linear(num_features, 1), nn.Sigmoid())
         else:
-            self.model.fc = nn.Linear(num_features, cfg.model.num_classes )
+            self.model.fc = nn.Linear(num_features, cfg.model.num_classes)
 
         self.criterion = nn.CrossEntropyLoss()
         # self.acc = Accuracy(task='multiclass', num_classes=num_classes)
@@ -63,7 +64,6 @@ class PretrainedResNet34(pl.LightningModule):
         """Forward pass."""
 
         return self.model(x)
-
 
     def _step(self, batch, mode):
         """Common step function."""

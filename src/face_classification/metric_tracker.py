@@ -1,8 +1,10 @@
 from pytorch_lightning.callbacks import Callback
 from src.face_classification.visualize import plot_train_acc, plot_train_loss, plot_val_acc, plot_val_loss
 
+
 class MetricTracker(Callback):
     """This class implements the callbacks that Pytorch lightning uses to track the metrics of the model during training and validation"""
+
     def __init__(self):
         self.collection = {
             "train_loss": [],

@@ -15,6 +15,8 @@ from src.face_classification.data import FaceDataset
 from src.face_classification.model import PretrainedResNet34
 
 app = typer.Typer()
+
+
 @app.command()
 def evaluate(model_path: str, config_name: str = "default_config") -> None:
     """Evaluate a trained model using PyTorch Lightning Trainer."""
@@ -22,7 +24,7 @@ def evaluate(model_path: str, config_name: str = "default_config") -> None:
     logging.basicConfig(level=logging.INFO)
     logger.info(f"Evaluating with model: {model_path}")
 
-    with hydra.initialize(config_path="../../configs", version_base = None, job_name="evaluate_model"):
+    with hydra.initialize(config_path="../../configs", version_base=None, job_name="evaluate_model"):
         cfg = hydra.compose(config_name=config_name)
 
     logger.info(f"Configuration: \n {OmegaConf.to_yaml(cfg)}")
