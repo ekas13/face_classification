@@ -109,7 +109,7 @@ class TestTrainingProcess:
 
         # Create a Trainer and fit the model
         trainer = Trainer(
-            max_epochs=1, limit_train_batches=2, limit_val_batches=0, log_every_n_steps=2
+            max_epochs=1, limit_train_batches=2, limit_val_batches=0, log_every_n_steps=2, accelerator=device.type
         )  # Limit for quick testing
         trainer.fit(model, train_dataloader, val_dataloaders=val_dataloader)
 
