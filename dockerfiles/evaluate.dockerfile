@@ -10,7 +10,7 @@ COPY requirements_dev.txt requirements_dev.txt
 COPY src/ src/
 COPY data/ data/
 COPY configs/ configs/
-COPY checkpoints/ checkpoints/
+COPY models/ models/
 COPY pyproject.toml pyproject.toml
 COPY README.md README.md
 
