@@ -6,8 +6,8 @@ steps:
     - '-c'
     - |
       apk add --no-cache gettext
-      envsubst < config_cpu.yaml > config.yaml.tmp
-      mv config.yaml.tmp config_cpu.yaml
+      envsubst < cloudbuild/config_cpu.yaml > cloudbuild/config.yaml.tmp
+      mv cloudbuild/config.yaml.tmp cloudbuild/config_cpu.yaml
   secretEnv: ['WANDB_API_KEY']
 
 - name: 'alpine'
@@ -17,7 +17,7 @@ steps:
   args:
     - '-c'
     - |
-      cat config_cpu.yaml
+      cat cloudbuild/config_cpu.yaml
 
 - name: 'gcr.io/cloud-builders/gcloud'
   id: 'Train on vertex AI'
@@ -34,7 +34,7 @@ steps:
     '${_VERTEX_TRAIN_CONFIG}',
   ]
 substitutions:
-  _VERTEX_TRAIN_CONFIG: 'config_cpu.yaml'
+  _VERTEX_TRAIN_CONFIG: 'cloudbuild/config_cpu.yaml'
 availableSecrets:
   secretManager:
   - versionName: projects/$PROJECT_ID/secrets/WANDB_API_KEY/versions/latest
