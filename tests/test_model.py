@@ -7,8 +7,10 @@ from src.face_classification.model import PretrainedResNet34
 with hydra.initialize(config_path="../configs", version_base=None, job_name="train_model"):
     config = hydra.compose(config_name="default_config")
 
+
 class TestModel:
     """Class that collects all tests concerning the model."""
+
     def test_model_output(self):
         """Testing model."""
         model = PretrainedResNet34(config)
@@ -24,7 +26,7 @@ class TestModel:
 
         # Check that all parameters except BatchNorm layers are frozen
         for name, param in model.model.named_parameters():
-            if not("bn" in name) and not ("fc" in name) :  # Allow BatchNorm layers to remain trainable
+            if not ("bn" in name) and not ("fc" in name):  # Allow BatchNorm layers to remain trainable
                 assert not param.requires_grad, f"Expected {name} to be frozen"
 
         # Check that fully connected layer parameters are trainable
@@ -67,12 +69,17 @@ class TestModel:
         optimizer.step()
 
         gradients = [p.grad for p in model.parameters() if p.requires_grad]
-        assert any(g is not None and g.abs().sum().item() > 0 for g in gradients), "Gradients should flow through the model"
+        assert any(
+            g is not None and g.abs().sum().item() > 0 for g in gradients
+        ), "Gradients should flow through the model"
+
 
 class TestTrainingProcess:
     """Class that collects all tests concerning the model training process."""
+
     def test_trainer_run_and_parameter_update(self):
         """Test the Trainer runs correctly and updates model parameters."""
+
         class DummyDataset(torch.utils.data.Dataset):
             def __init__(self, size):
                 self.size = size
@@ -93,11 +100,17 @@ class TestTrainingProcess:
         # Initialize the model
         model = PretrainedResNet34(config)
 
+        # Set macos to cpu to avoid issues with MPS
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = model.to(device)
+
         # Save a copy of the initial model parameters
         initial_params = {name: param.clone() for name, param in model.named_parameters() if param.requires_grad}
 
         # Create a Trainer and fit the model
-        trainer = Trainer(max_epochs=1, limit_train_batches=2, limit_val_batches=0, log_every_n_steps=2)  # Limit for quick testing
+        trainer = Trainer(
+            max_epochs=1, limit_train_batches=2, limit_val_batches=0, log_every_n_steps=2, accelerator=device.type
+        )  # Limit for quick testing
         trainer.fit(model, train_dataloader, val_dataloaders=val_dataloader)
 
         # Check if any of the trainable parameters have changed
@@ -105,4 +118,3 @@ class TestTrainingProcess:
         has_changed = any(not torch.equal(initial_params[name], updated_params[name]) for name in initial_params)
 
         assert has_changed, "Model parameters should have changed after training"
-
