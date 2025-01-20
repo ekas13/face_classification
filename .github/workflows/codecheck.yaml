@@ -28,7 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install ruff
+          pip install ruff == 0.8.6
           pip list
 
       - name: Ruff check
