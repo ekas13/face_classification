@@ -39,3 +39,5 @@ availableSecrets:
   secretManager:
   - versionName: projects/$PROJECT_ID/secrets/WANDB_API_KEY/versions/latest
     env: 'WANDB_API_KEY'
+options:
+  logging: CLOUD_LOGGING_ONLY
