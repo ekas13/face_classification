@@ -1,15 +1,17 @@
+import hydra
 import torch
 from pytorch_lightning import Trainer
 
 from src.face_classification.model import PretrainedResNet34
 
+with hydra.initialize(config_path="../configs", version_base=None, job_name="train_model"):
+    config = hydra.compose(config_name="default_config")
 
 class TestModel:
     """Class that collects all tests concerning the model."""
     def test_model_output(self):
         """Testing model."""
-
-        model = PretrainedResNet34(num_classes=16, fine_tuning=True)
+        model = PretrainedResNet34(config)
         assert isinstance(model, torch.nn.Module)
 
         image = torch.randn(1, 3, 256, 256)
@@ -18,7 +20,7 @@ class TestModel:
 
     def test_fine_tuning(self):
         """Testing fine-tuning behavior."""
-        model = PretrainedResNet34(num_classes=16, fine_tuning=True)
+        model = PretrainedResNet34(config)
 
         # Check that all parameters except BatchNorm layers are frozen
         for name, param in model.model.named_parameters():
@@ -31,14 +33,16 @@ class TestModel:
 
     def test_non_fine_tuning(self):
         """Testing non-fine-tuning behavior."""
-        model = PretrainedResNet34(num_classes=16, fine_tuning=False)
+        config_no_fine_tuning = config
+        config_no_fine_tuning.model.fine_tuning = False
+        model = PretrainedResNet34(config_no_fine_tuning)
 
         all_params = [p.requires_grad for p in model.model.parameters()]
         assert all(all_params), "Expected all parameters to be trainable in non-fine-tuning mode"
 
     def test_loss_computation(self):
         """Testing loss computation."""
-        model = PretrainedResNet34(num_classes=16, fine_tuning=True)
+        model = PretrainedResNet34(config)
         model.criterion = torch.nn.CrossEntropyLoss()
 
         batch_size = 4
@@ -51,7 +55,7 @@ class TestModel:
 
     def test_gradient_flow(self):
         """Testing gradient flow through the model."""
-        model = PretrainedResNet34(num_classes=16, fine_tuning=True)
+        model = PretrainedResNet34(config)
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
         dummy_images = torch.randn(4, 3, 256, 256)
@@ -87,7 +91,7 @@ class TestTrainingProcess:
         val_dataloader = torch.utils.data.DataLoader(val_set, batch_size=2, num_workers=4)
 
         # Initialize the model
-        model = PretrainedResNet34(num_classes=16)
+        model = PretrainedResNet34(config)
 
         # Save a copy of the initial model parameters
         initial_params = {name: param.clone() for name, param in model.named_parameters() if param.requires_grad}
