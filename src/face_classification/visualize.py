@@ -2,7 +2,7 @@ import os
 
 import matplotlib.pyplot as plt
 
-figures_path = os.path.join(os.path.dirname(__file__), "..", "..", "reports", "figures")
+figures_path = os.path.join("reports", "figures")
 
 
 def plot_train_loss(statistics):
