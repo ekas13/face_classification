@@ -86,9 +86,9 @@ class TestTrainingProcess:
                 return self.data[idx], self.labels[idx]
 
         train_set = DummyDataset(size=8)
-        train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=4, num_workers=4)
+        train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=4, num_workers=0)
         val_set = DummyDataset(size=4)
-        val_dataloader = torch.utils.data.DataLoader(val_set, batch_size=2, num_workers=4)
+        val_dataloader = torch.utils.data.DataLoader(val_set, batch_size=2, num_workers=0)
 
         # Initialize the model
         model = PretrainedResNet34(config)
