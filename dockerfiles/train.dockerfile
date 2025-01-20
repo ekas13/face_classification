@@ -11,7 +11,7 @@ COPY src/ src/
 COPY data/ data/
 COPY reports/ reports/
 COPY configs/ configs/
-COPY checkpoints/ checkpoints/
+COPY models/ models/
 COPY pyproject.toml pyproject.toml
 COPY README.md README.md
 
