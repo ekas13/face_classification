@@ -5,3 +5,6 @@ workerPoolSpecs:
   replicaCount: 1
   containerSpec:
     imageUri: europe-west3-docker.pkg.dev/mlops-group28/group28-repository/train-docker-image:latest
+    env:
+    - name: WANDB_API_KEY
+      value: $WANDB_API_KEY
