@@ -1,0 +1,14 @@
+program: src/face_classification/train.py
+name: experiment1
+project: face_classification
+method: grid
+metric:
+    goal: minimize
+    name: training_loss
+parameters:
+    lr:
+        values: [0.001, 0.002]
+    batch_size:
+        values: [16, 32]
+run_cap: 10
+command: ["./env/Scripts/python", "src/face_classification/train.py"]
