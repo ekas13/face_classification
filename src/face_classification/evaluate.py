@@ -10,8 +10,8 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import WandbLogger
 from torch.utils.data import DataLoader
 
-from src.face_classification.data import FaceDataset
-from src.face_classification.model import PretrainedResNet34
+from face_classification.data import FaceDataset
+from face_classification.model import PretrainedResNet34
 
 app = typer.Typer()
 
