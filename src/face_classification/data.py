@@ -1,7 +1,7 @@
+import logging
 import os
 from pathlib import Path
 
-import logging
 import torch
 import typer
 from PIL import Image

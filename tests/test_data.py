@@ -17,10 +17,11 @@ def test_dataset_length():
     val_dataset = FaceDataset(mode="val")
     assert isinstance(val_dataset, Dataset)
     assert len(val_dataset) == 32
-    
+
     test_dataset = FaceDataset(mode="test")
     assert isinstance(test_dataset, Dataset)
     assert len(test_dataset) == 32
+
 
 @pytest.mark.skipif(not os.path.exists("data/processed"), reason="Data files not found")
 def test_data_shape():
@@ -39,6 +40,7 @@ def test_data_shape():
     image, target = test_dataset[0]
     assert image.shape == (3, 256, 256)
     assert target.shape == torch.Size([])
+
 
 @pytest.mark.skipif(not os.path.exists("data/processed"), reason="Data files not found")
 def test_dataset_loading():
