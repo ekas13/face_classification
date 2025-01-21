@@ -140,7 +140,7 @@ class PretrainedResNet34(pl.LightningModule):
 
     def on_test_epoch_end(self):  # args are defined as part of pl API
         dummy_input = torch.zeros((1, 3, 256, 256), device=self.device)
-        model_filename = "model_final.onnx"
+        model_filename = "models/model_final.onnx"
         self.to_onnx(model_filename, dummy_input, export_params=True)
         artifact = wandb.Artifact(name="model.ckpt", type="model")
         artifact.add_file(model_filename)

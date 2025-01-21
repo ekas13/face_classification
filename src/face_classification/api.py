@@ -10,11 +10,12 @@ from PIL import Image
 @app.get("/predict_single_image")
 def predict_single_image(image_path: str):
     """Predict using ONNX model."""
-    # Load the ONNX model
-    model = onnxruntime.InferenceSession("models/checkpoints/model-epoch=29-val_acc=0.94.ckpt")
-
-    # Define the test dataset and dataloader
+    import onnxruntime
+    from PIL import Image
     import torchvision.transforms as transforms
+
+    # Load the ONNX model
+    model = onnxruntime.InferenceSession("models/model_final.onnx")
 
     # Define the test dataset and dataloader
     transform = transforms.Compose([
@@ -22,12 +23,19 @@ def predict_single_image(image_path: str):
         transforms.ToTensor(),
     ])
 
-    image = Image.open(image_path)
+    # Open and preprocess the image
+    image = Image.open(image_path).convert("RGB")  # Ensure 3 channels
     image = transform(image)
     image = image.unsqueeze(0).numpy()
-    output = model.run(None, image)
 
-    return {"output": output[0].tolist()}
+    # Get the input name for the model
+    input_name = model.get_inputs()[0].name
+
+    # Perform inference
+    output = model.run(None, {input_name: image})
+    output_class = int(np.argmax(output))
+
+    return {"output class": output_class}
 
 
 @app.get("/train_model")
