@@ -5,38 +5,42 @@ from face_classification.train import train
 from face_classification.evaluate import evaluate
 app = FastAPI()
 from PIL import Image
+from fastapi.responses import JSONResponse
 
 
-# @app.get("/predict_single_image")
-# def predict_single_image(image_path: str):
-#     """Predict using ONNX model."""
-#     # Load the ONNX model
-#     model = onnxruntime.InferenceSession("models/checkpoints/model-epoch=29-val_acc=0.94.ckpt")
+@app.get("/predict_single_image")
+def predict_single_image(image_path: str):
+    """Predict using ONNX model."""
+    # Load the ONNX model
+    model = onnxruntime.InferenceSession("models/checkpoints/model-epoch=29-val_acc=0.94.ckpt")
 
-#     # Define the test dataset and dataloader
-#     import torchvision.transforms as transforms
+    # Define the test dataset and dataloader
+    import torchvision.transforms as transforms
 
-#     # Define the test dataset and dataloader
-#     transform = transforms.Compose([
-#         transforms.Resize((256, 256)),
-#         transforms.ToTensor(),
-#     ])
+    # Define the test dataset and dataloader
+    transform = transforms.Compose([
+        transforms.Resize((256, 256)),
+        transforms.ToTensor(),
+    ])
 
-#     image = Image.open(image_path)
-#     image = transform(image)
-#     image = image.unsqueeze(0).numpy()
-#     output = model.run(None, image)
+    image = Image.open(image_path)
+    image = transform(image)
+    image = image.unsqueeze(0).numpy()
+    output = model.run(None, image)
 
-#     return {"output": output[0].tolist()}
+    return {"output": output[0].tolist()}
 
 
 @app.get("/train_model")
-def train_model():
+async def train_model():
     """Train a model on the Face Dataset."""
+    yield JSONResponse(content={"message": "Training request received."})
     train()
-    return {"message": "Model training completed."}
+    yield JSONResponse(content={"message": "Model training completed."})
+
 @app.get("/evaluate_model")
-def evaluate_model():
+async def evaluate_model():
     """Evaluate a trained model using PyTorch Lightning Trainer."""
+    yield JSONResponse(content={"message": "Evaluation request received."})
     evaluate()
-    return {"message": "Model evaluation completed."}
+    yield JSONResponse(content={"message": "Model evaluation completed."})

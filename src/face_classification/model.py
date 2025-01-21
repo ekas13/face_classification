@@ -128,21 +128,6 @@ class PretrainedResNet34(pl.LightningModule):
                                        preds=preds.numpy(),
                                        class_names=[str(i) for i in range(16)])})
 
-    def on_train_end(self):
-        """Called at the end of training."""
-        dummy_input = torch.randn(1, 3, 256, 256, device=self.device)
-        torch.onnx.export(
-            self,
-            dummy_input,
-            "model_final.onnx",
-            export_params=True,
-            opset_version=10,
-            do_constant_folding=True,
-            input_names=['input'],
-            output_names=['output'],
-            dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}
-        )
-
     def test_step(self, batch, batch_idx):
         """Test step."""
         xs, ys = batch
