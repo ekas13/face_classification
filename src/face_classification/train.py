@@ -4,13 +4,13 @@ import os
 import hydra
 import torch
 import typer
+import wandb
 from omegaconf import OmegaConf
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from torch.profiler import ProfilerActivity, profile, tensorboard_trace_handler
 
-import wandb
 from face_classification.data import FaceDataset
 from face_classification.metric_tracker import MetricTracker
 from face_classification.model import PretrainedResNet34
