@@ -5,7 +5,6 @@ from face_classification.train import train
 from face_classification.evaluate import evaluate
 app = FastAPI()
 from PIL import Image
-from fastapi.responses import JSONResponse
 
 
 @app.get("/predict_single_image")
@@ -32,15 +31,13 @@ def predict_single_image(image_path: str):
 
 
 @app.get("/train_model")
-async def train_model():
+def train_model():
     """Train a model on the Face Dataset."""
-    yield JSONResponse(content={"message": "Training request received."})
     train()
-    yield JSONResponse(content={"message": "Model training completed."})
+    return {"message": "Model training completed."}
 
 @app.get("/evaluate_model")
-async def evaluate_model():
+def evaluate_model():
     """Evaluate a trained model using PyTorch Lightning Trainer."""
-    yield JSONResponse(content={"message": "Evaluation request received."})
     evaluate()
-    yield JSONResponse(content={"message": "Model evaluation completed."})
+    return {"message": "Model evaluation completed."}
