@@ -16,11 +16,37 @@ steps:
     '-f',
     'dockerfiles/api.dockerfile'
   ]
+
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push container image'
   args: [
     'push',
     'europe-west3-docker.pkg.dev/$PROJECT_ID/group28-repository/app:latest'
   ]
+
+# Deploy to Cloud Run with Secret Access
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Deploy to Cloud Run'
+  args: [
+    'run',
+    'deploy',
+    'app-docker-image',
+    '--image',
+    'europe-west3-docker.pkg.dev/$PROJECT_ID/group28-repository/app:latest',
+    '--region',
+    'europe-west3',
+    '--platform',
+    'managed',
+    '--port',
+    '8000',
+    '--memory',
+    '16Gi',
+    '--cpu',
+    '4',
+    '--allow-unauthenticated',
+    '--set-secrets',
+    'WANDB_API_KEY=projects/$PROJECT_ID/secrets/WANDB_API_KEY_NANDOR:latest'
+  ]
+
 options:
   logging: CLOUD_LOGGING_ONLY
