@@ -45,7 +45,7 @@ steps:
     '4',
     '--allow-unauthenticated',
     '--set-secrets',
-    'WANDB_API_KEY=projects/$PROJECT_ID/secrets/WANDB_API_KEY_NANDOR:latest'
+    'WANDB_API_KEY=projects/294894715547/secrets/WANDB_API_KEY_NANDOR:latest'
   ]
 
 options:
