@@ -1,0 +1,20 @@
+{
+    "name": "Face Classification Dev Container",
+    "build": {
+        "dockerfile": "../dockerfiles/api.dockerfile",
+        "context": ".."
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash"
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance"
+            ]
+        }
+    },
+    "remoteUser": "vscode",
+    "workspaceFolder": "/workspace"
+}

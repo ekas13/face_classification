@@ -113,6 +113,7 @@ class PretrainedResNet34(pl.LightningModule):
 
     def on_validation_epoch_end(self):
         validation_step_outputs = self.validation_step_logits
+
         flattened_logits = torch.flatten(torch.cat(validation_step_outputs))
         self.logger.experiment.log(
             {"val/logits": wandb.Histogram(flattened_logits.to("cpu")),
@@ -126,6 +127,21 @@ class PretrainedResNet34(pl.LightningModule):
                                        y_true=targets.numpy(),
                                        preds=preds.numpy(),
                                        class_names=[str(i) for i in range(16)])})
+
+    def on_train_end(self):
+        """Called at the end of training."""
+        dummy_input = torch.randn(1, 3, 256, 256, device=self.device)
+        torch.onnx.export(
+            self,
+            dummy_input,
+            "model_final.onnx",
+            export_params=True,
+            opset_version=10,
+            do_constant_folding=True,
+            input_names=['input'],
+            output_names=['output'],
+            dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}
+        )
 
     def test_step(self, batch, batch_idx):
         """Test step."""
