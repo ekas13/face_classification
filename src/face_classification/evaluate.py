@@ -17,7 +17,7 @@ app = typer.Typer()
 
 
 @app.command()
-def evaluate(model_path: str = "models/checkpoints/model-epoch=00-val_acc=0.09-v2.ckpt", config_name: str = "default_config") -> None:
+def evaluate(model_path: str = "models/checkpoints/model-epoch=29-val_acc=0.94.ckpt", config_name: str = "default_config") -> None:
     """Evaluate a trained model using PyTorch Lightning Trainer."""
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
