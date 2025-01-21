@@ -1,10 +1,11 @@
-from pytorch_lightning.callbacks import Callback
 import pytorch_lightning as pl
 import torch
-
 import wandb
+from pytorch_lightning.callbacks import Callback
+
 wandb.login()
 wandb_logger = pl.loggers.WandbLogger(project="face_classification")
+
 
 class MetricTracker(Callback):
     def __init__(self, val_samples, num_samples=8):
@@ -19,8 +20,12 @@ class MetricTracker(Callback):
         logits = pl_module(val_imgs)
         preds = torch.argmax(logits, 1)
 
-        trainer.logger.experiment.log({
-            "examples": [wandb.Image(x, caption=f"Pred:{pred}, Label:{y}")
-                            for x, pred, y in zip(val_imgs, preds, self.val_labels)],
-            "global_step": trainer.global_step
-            })
+        trainer.logger.experiment.log(
+            {
+                "examples": [
+                    wandb.Image(x, caption=f"Pred:{pred}, Label:{y}")
+                    for x, pred, y in zip(val_imgs, preds, self.val_labels)
+                ],
+                "global_step": trainer.global_step,
+            }
+        )

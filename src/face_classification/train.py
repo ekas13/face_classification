@@ -11,13 +11,15 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from torch.profiler import ProfilerActivity, profile, tensorboard_trace_handler
 
+from face_classification.data import FaceDataset
 from face_classification.metric_tracker import MetricTracker
 from face_classification.model import PretrainedResNet34
-from face_classification.data import FaceDataset
-import os
+
 app = typer.Typer()
 import wandb
+
 wandb.login()
+
 
 @app.command()
 def train(config_name: str = "default_config") -> None:
@@ -69,8 +71,12 @@ def train(config_name: str = "default_config") -> None:
 def run_training(cfg, hparams) -> None:
     train_set = FaceDataset(mode="train")
     val_set = FaceDataset(mode="val")
-    train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers, shuffle=True)
-    val_dataloader = torch.utils.data.DataLoader(val_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers, shuffle=False)
+    train_dataloader = torch.utils.data.DataLoader(
+        train_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers, shuffle=True
+    )
+    val_dataloader = torch.utils.data.DataLoader(
+        val_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers, shuffle=False
+    )
 
     model = PretrainedResNet34(cfg)
     checkpoint_callback = ModelCheckpoint(
@@ -83,7 +89,9 @@ def run_training(cfg, hparams) -> None:
     # Get the first batch from the validation dataloader
     first_val_batch = next(iter(val_dataloader))
     # Reset the validation dataloader
-    val_dataloader = torch.utils.data.DataLoader(val_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers, shuffle=False)
+    val_dataloader = torch.utils.data.DataLoader(
+        val_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers, shuffle=False
+    )
     metric_tracker = MetricTracker(first_val_batch, num_samples=cfg.evaluate.batch_size)
 
     trainer = Trainer(

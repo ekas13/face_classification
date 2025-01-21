@@ -1,8 +1,10 @@
 import numpy as np
 import onnxruntime
 from fastapi import FastAPI
-from face_classification.train import train
+
 from face_classification.evaluate import evaluate
+from face_classification.train import train
+
 app = FastAPI()
 from PIL import Image
 
@@ -11,17 +13,19 @@ from PIL import Image
 def predict_single_image(image_path: str):
     """Predict using ONNX model."""
     import onnxruntime
-    from PIL import Image
     import torchvision.transforms as transforms
+    from PIL import Image
 
     # Load the ONNX model
     model = onnxruntime.InferenceSession("models/model_final.onnx")
 
     # Define the test dataset and dataloader
-    transform = transforms.Compose([
-        transforms.Resize((256, 256)),
-        transforms.ToTensor(),
-    ])
+    transform = transforms.Compose(
+        [
+            transforms.Resize((256, 256)),
+            transforms.ToTensor(),
+        ]
+    )
 
     # Open and preprocess the image
     image = Image.open(image_path).convert("RGB")  # Ensure 3 channels
@@ -43,6 +47,7 @@ def train_model():
     """Train a model on the Face Dataset."""
     train()
     return {"message": "Model training completed."}
+
 
 @app.get("/evaluate_model")
 def evaluate_model():

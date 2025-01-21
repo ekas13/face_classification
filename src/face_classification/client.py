@@ -1,5 +1,7 @@
-import requests
 import argparse
+
+import requests
+
 
 class FaceClassificationClient:
     def __init__(self, base_url="http://localhost:8000"):
@@ -20,9 +22,13 @@ class FaceClassificationClient:
         url = f"{self.base_url}/evaluate_model"
         response = requests.get(url)
         return response.json()
+
+
 def main():
-    parser = argparse.ArgumentParser(description='Face Classification Client')
-    parser.add_argument('--base_url', type=str, default="http://localhost:8000", help='Base URL for the Face Classification API')
+    parser = argparse.ArgumentParser(description="Face Classification Client")
+    parser.add_argument(
+        "--base_url", type=str, default="http://localhost:8000", help="Base URL for the Face Classification API"
+    )
     args = parser.parse_args()
 
     base_url = args.base_url
@@ -41,6 +47,7 @@ def main():
             break
         else:
             print("Unknown command. Please enter 'train', 'evaluate', 'predict', or 'exit'.")
+
 
 if __name__ == "__main__":
     main()
