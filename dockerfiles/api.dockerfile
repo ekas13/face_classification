@@ -18,7 +18,7 @@ COPY pyproject.toml pyproject.toml
 COPY README.md README.md
 
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
+RUN pip install -r requirements.txt --no-cache-dir --verbose
 RUN pip install -e . --no-deps --no-cache-dir --verbose
 
 EXPOSE 8000
