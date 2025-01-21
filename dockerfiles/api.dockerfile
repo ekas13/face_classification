@@ -18,7 +18,9 @@ COPY pyproject.toml pyproject.toml
 COPY README.md README.md
 
 
-RUN pip install -r requirements.txt --no-cache-dir --verbose
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 RUN pip install -e . --no-deps --no-cache-dir --verbose
 
-CMD ["uvicorn", "src.face_classification.api:app", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 8000
+
+ENTRYPOINT ["uvicorn", "src.face_classification.api:app", "--host", "0.0.0.0", "--port", "8000"]
