@@ -31,8 +31,6 @@ line-length = 120
 [tool.ruff.lint]
 select = ["I", "D101"]
 
-[tool.isort]
-profile = "black"
 
 [tool.coverage.run]
 omit = ["tests/*"]
