@@ -7,7 +7,7 @@ from torchmetrics import Accuracy
 from torchvision import models
 from torchvision.models import ResNet34_Weights
 
-from src.face_classification.utils import accuracy
+from face_classification.utils import accuracy
 
 # Optimizer options
 OPTIMIZER_OPTIONS = {"adam": torch.optim.Adam, "sgd": torch.optim.SGD}
