@@ -2,7 +2,7 @@ import hydra
 import torch
 from pytorch_lightning import Trainer
 
-from src.face_classification.model import PretrainedResNet34
+from face_classification.model import PretrainedResNet34
 
 with hydra.initialize(config_path="../configs", version_base=None, job_name="train_model"):
     config = hydra.compose(config_name="default_config")
@@ -92,20 +92,18 @@ class TestTrainingProcess:
             def __getitem__(self, idx):
                 return self.data[idx], self.labels[idx]
 
+        # Create datasets and DataLoader
         train_set = DummyDataset(size=8)
         train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=4, num_workers=0)
         val_set = DummyDataset(size=4)
         val_dataloader = torch.utils.data.DataLoader(val_set, batch_size=2, num_workers=0)
 
-        # Initialize the model
+        # Initialize the model and move it to the correct device
         model = PretrainedResNet34(config)
 
-        # Set macos to cpu to avoid issues with MPS
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = model.to(device)
-
         # Save a copy of the initial model parameters
-        initial_params = {name: param.clone() for name, param in model.named_parameters() if param.requires_grad}
+        initial_params = {name: param.clone().to(device) for name, param in model.named_parameters() if param.requires_grad}
 
         # Create a Trainer and fit the model
         trainer = Trainer(
@@ -114,7 +112,8 @@ class TestTrainingProcess:
         trainer.fit(model, train_dataloader, val_dataloaders=val_dataloader)
 
         # Check if any of the trainable parameters have changed
-        updated_params = {name: param for name, param in model.named_parameters() if param.requires_grad}
+        updated_params = {name: param.to(device) for name, param in model.named_parameters() if param.requires_grad}
         has_changed = any(not torch.equal(initial_params[name], updated_params[name]) for name in initial_params)
 
         assert has_changed, "Model parameters should have changed after training"
+

@@ -11,9 +11,9 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from torch.profiler import ProfilerActivity, profile, tensorboard_trace_handler
 
-from src.face_classification.data import FaceDataset
-from src.face_classification.metric_tracker import MetricTracker
-from src.face_classification.model import PretrainedResNet34
+from face_classification.data import FaceDataset
+from face_classification.metric_tracker import MetricTracker
+from face_classification.model import PretrainedResNet34
 
 app = typer.Typer()
 

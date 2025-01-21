@@ -1,6 +1,6 @@
 from pytorch_lightning.callbacks import Callback
 
-from src.face_classification.visualize import plot_train_acc, plot_train_loss, plot_val_acc, plot_val_loss
+from face_classification.visualize import plot_train_acc, plot_train_loss, plot_val_acc, plot_val_loss
 
 
 class MetricTracker(Callback):
