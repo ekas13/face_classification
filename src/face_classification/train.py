@@ -63,7 +63,9 @@ def train(config_name: str = "default_config") -> None:
 
 
 def run_training(cfg, hparams) -> None:
-    run = wandb.init(entity="face_classification", project="face_classification", config=OmegaConf.to_container(hparams))  # type: ignore
+    run = wandb.init(
+        entity="face_classification", project="face_classification", config=OmegaConf.to_container(hparams)
+    )  # type: ignore
     wandb.log(OmegaConf.to_container(hparams))  # type: ignore
 
     train_set = FaceDataset(mode="train")
@@ -111,7 +113,9 @@ def run_training(cfg, hparams) -> None:
         artifact.aliases.append(f"v{artifact.version}")
 
         # Link the artifact to the registry
-        artifact.link(target_path="vbranica-danmarks-tekniske-universitet-dtu-org/wandb-registry-face_classification_registry/Model_collection:latest")  # Replace with your registry name
+        artifact.link(
+            target_path="vbranica-danmarks-tekniske-universitet-dtu-org/wandb-registry-face_classification_registry/Model_collection:latest"
+        )  # Replace with your registry name
 
 
 if __name__ == "__main__":
