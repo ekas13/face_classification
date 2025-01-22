@@ -103,7 +103,9 @@ class TestTrainingProcess:
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         # Save a copy of the initial model parameters
-        initial_params = {name: param.clone().to(device) for name, param in model.named_parameters() if param.requires_grad}
+        initial_params = {
+            name: param.clone().to(device) for name, param in model.named_parameters() if param.requires_grad
+        }
 
         # Create a Trainer and fit the model
         trainer = Trainer(

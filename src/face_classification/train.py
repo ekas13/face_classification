@@ -16,6 +16,9 @@ from face_classification.metric_tracker import MetricTracker
 from face_classification.model import PretrainedResNet34
 
 app = typer.Typer()
+import wandb
+
+wandb.login()
 
 
 @app.command()
@@ -34,9 +37,6 @@ def train(config_name: str = "default_config") -> None:
     # Set random seed for reproducibility
     torch.manual_seed(cfg.seed)
     hparams = cfg.train
-
-    run = wandb.init(project="face_classification", config=OmegaConf.to_container(hparams))  # type: ignore
-    wandb.log(OmegaConf.to_container(hparams))  # type: ignore
 
     if hparams.use_tensorflow_profiler:
         with profile(
@@ -66,24 +66,35 @@ def train(config_name: str = "default_config") -> None:
 
 
 def run_training(cfg, hparams) -> None:
+    run = wandb.init(
+        entity="face_classification", project="face_classification", config=OmegaConf.to_container(hparams)
+    )  # type: ignore
+    wandb.log(OmegaConf.to_container(hparams))  # type: ignore
+
     train_set = FaceDataset(mode="train")
     val_set = FaceDataset(mode="val")
     train_dataloader = torch.utils.data.DataLoader(
-        train_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers
+        train_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers, shuffle=True
     )
     val_dataloader = torch.utils.data.DataLoader(
-        val_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers
+        val_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers, shuffle=False
     )
 
     model = PretrainedResNet34(cfg)
     checkpoint_callback = ModelCheckpoint(
-        monitor="val_acc",
+        monitor="val/acc",
         dirpath="models/checkpoints/",
         filename="model-{epoch:02d}-{val_acc:.2f}",
         save_top_k=hparams.save_top_k,
         mode=hparams.mode,
     )
-    metric_tracker = MetricTracker()
+    # Get the first batch from the validation dataloader
+    first_val_batch = next(iter(val_dataloader))
+    # Reset the validation dataloader
+    val_dataloader = torch.utils.data.DataLoader(
+        val_set, batch_size=hparams.batch_size, num_workers=hparams.num_workers, shuffle=False
+    )
+    metric_tracker = MetricTracker(first_val_batch, num_samples=cfg.evaluate.batch_size)
 
     trainer = Trainer(
         max_epochs=hparams.epochs,
@@ -92,6 +103,28 @@ def run_training(cfg, hparams) -> None:
         logger=WandbLogger(project="face_classification"),
     )
     trainer.fit(model, train_dataloader, val_dataloaders=val_dataloader)
+
+    best_model_path = checkpoint_callback.best_model_path
+
+    # Log the model to W&B registry
+    if best_model_path:  # Ensure a model checkpoint exists
+        artifact = wandb.Artifact(
+            name="face_classification_model",
+            type="model",
+            description="A model trained to classify face images",
+        )
+        artifact.add_file(best_model_path)  # Add the saved model file
+        run.log_artifact(artifact)  # Log artifact to W&B
+
+        # Link the artifact to the model registry
+        artifact.wait()  # Ensure artifact is fully uploaded before linking
+        artifact.aliases.append("latest")  # Add alias for the artifact version
+        artifact.aliases.append(f"v{artifact.version}")
+
+        # Link the artifact to the registry
+        artifact.link(
+            target_path="vbranica-danmarks-tekniske-universitet-dtu-org/wandb-registry-face_classification_registry/Model_collection:latest"
+        )  # Replace with your registry name
 
 
 if __name__ == "__main__":

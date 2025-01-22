@@ -31,6 +31,7 @@ line-length = 120
 [tool.ruff.lint]
 select = ["I", "D101"]
 
+
 [tool.coverage.run]
 omit = ["tests/*"]
 

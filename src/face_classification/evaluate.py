@@ -17,7 +17,9 @@ app = typer.Typer()
 
 
 @app.command()
-def evaluate(model_path: str, config_name: str = "default_config") -> None:
+def evaluate(
+    model_path: str = "models/checkpoints/model-epoch=29-val_acc=0.94.ckpt", config_name: str = "default_config"
+) -> None:
     """Evaluate a trained model using PyTorch Lightning Trainer."""
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
@@ -37,8 +39,10 @@ def evaluate(model_path: str, config_name: str = "default_config") -> None:
 
     model = PretrainedResNet34(cfg)
     if model_path:
-        checkpoint = torch.load(model_path)
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        checkpoint = torch.load(model_path, map_location=device)
         model.load_state_dict(checkpoint["state_dict"])
+        model.to(device)
 
     # Initialize the PyTorch Lightning trainer
     trainer = Trainer(accelerator=hparams.accelerator, logger=WandbLogger(project="face_classification"))
