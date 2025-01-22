@@ -5,6 +5,7 @@ import requests
 
 class FaceClassificationClient:
     """Client for communicating with the Face Classification API."""
+
     def __init__(self, base_url="http://localhost:8000"):
         self.base_url = base_url
 
