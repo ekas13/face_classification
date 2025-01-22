@@ -40,8 +40,8 @@ jobs:
     - name: Check data statistics and generate report
       run: |
         python src/face_classification/data_statistics.py > data_statistics.md
-        echo '![](./train_label_distribution.png "Train label distribution")' >> data_statistics.md
-        echo '![](./test_label_distribution.png "Test label distribution")' >> data_statistics.md
+        echo '![](reports/figures/train_label_distribution.png "Train label distribution")' >> data_statistics.md
+        echo '![](reports/figures/test_label_distribution.png "Test label distribution")' >> data_statistics.md
 
     - name: Setup cml
       uses: iterative/setup-cml@v2
