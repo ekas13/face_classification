@@ -1,48 +1,33 @@
+import pytorch_lightning as pl
+import torch
+import wandb
 from pytorch_lightning.callbacks import Callback
 
-from face_classification.visualize import (
-    plot_train_acc,
-    plot_train_loss,
-    plot_val_acc,
-    plot_val_loss,
-)
+wandb.login()
+wandb_logger = pl.loggers.WandbLogger(project="face_classification")
 
 
 class MetricTracker(Callback):
-    """This class implements the callbacks that Pytorch lightning uses to track the metrics of the model during training and validation"""
+    """Metric tracker for logging metrics to wandb"""
 
-    def __init__(self):
-        self.collection = {
-            "train_loss": [],
-            "train_acc": [],
-            "val_loss": [],
-            "val_acc": [],
-            "test_loss": [],
-            "test_acc": [],
-        }
-
-    def on_train_epoch_end(self, trainer, pl_module):
-        elogs = trainer.callback_metrics
-        train_loss = elogs.get("train_loss")
-        train_acc = elogs.get("train_acc")
-        if train_loss is not None:
-            self.collection["train_loss"].append(train_loss.item())
-        if train_acc is not None:
-            self.collection["train_acc"].append(train_acc.item())
+    def __init__(self, val_samples, num_samples=8):
+        super().__init__()
+        self.val_imgs, self.val_labels = val_samples
+        self.val_imgs = self.val_imgs[:num_samples]
+        self.val_labels = self.val_labels[:num_samples]
 
     def on_validation_epoch_end(self, trainer, pl_module):
-        elogs = trainer.callback_metrics
-        val_loss = elogs.get("val_loss")
-        val_acc = elogs.get("val_acc")
-        if val_loss is not None:
-            self.collection["val_loss"].append(val_loss.item())
-        if val_acc is not None:
-            self.collection["val_acc"].append(val_acc.item())
+        val_imgs = self.val_imgs.to(device=pl_module.device)
 
-    def on_train_end(self, trainer, pl_module):
-        plot_train_loss(self.collection)
-        plot_train_acc(self.collection)
+        logits = pl_module(val_imgs)
+        preds = torch.argmax(logits, 1)
 
-    def on_validation_end(self, trainer, pl_module):
-        plot_val_loss(self.collection)
-        plot_val_acc(self.collection)
+        trainer.logger.experiment.log(
+            {
+                "examples": [
+                    wandb.Image(x, caption=f"Pred:{pred}, Label:{y}")
+                    for x, pred, y in zip(val_imgs, preds, self.val_labels)
+                ],
+                "global_step": trainer.global_step,
+            }
+        )

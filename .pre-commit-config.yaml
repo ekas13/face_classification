@@ -5,10 +5,15 @@ repos:
     rev: v3.2.0
     hooks:
     -   id: trailing-whitespace
+        exclude: ^\.github/workflows/
     -   id: end-of-file-fixer
+        exclude: ^\.github/workflows/
     -   id: check-yaml
+        exclude: ^\.github/workflows/
     -   id: check-added-large-files
+        exclude: ^\.github/workflows/
     -   id: check-merge-conflict
+        exclude: ^\.github/workflows/
 
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.8.6
