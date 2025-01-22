@@ -24,6 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements_dev.txt
+        pip install dvc 'dvc[gs]'
         pip list
 
     - name: Auth with GCP
