@@ -1,11 +1,14 @@
+import os
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import torch
 import typer
-import os
-from pathlib import Path
+
 from face_classification.data import FaceDataset
 
 figures_path = os.path.join("reports", "figures")
+
 
 def data_statistics(datadir: str = "data/processed") -> None:
     """Compute dataset statistics and visualize the data."""
@@ -56,6 +59,7 @@ def data_statistics(datadir: str = "data/processed") -> None:
     plt.ylabel("Count")
     plt.savefig(os.path.join(figures_path, f"test_label_distribution.png"))
     plt.close()
+
 
 if __name__ == "__main__":
     typer.run(data_statistics)
