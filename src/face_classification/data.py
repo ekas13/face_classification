@@ -4,6 +4,7 @@ from pathlib import Path
 
 import torch
 import typer
+import matplotlib.pyplot as plt
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision.transforms import ToTensor
@@ -122,7 +123,6 @@ def preprocess(raw_data_path: Path, output_folder: Path) -> None:
                     resized_image.save(test_output_folder / new_name)
 
     logger.info(f"Data preprocessing complete. Preprocessed data saved to {output_folder}")
-
 
 if __name__ == "__main__":
     typer.run(preprocess)

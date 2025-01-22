@@ -22,7 +22,7 @@ steps:
     'push',
     'europe-west3-docker.pkg.dev/$PROJECT_ID/group28-repository/train-docker-image:latest'
   ]
-  
+
 - name: "alpine"
   id: "Replace values in the training config"
   entrypoint: "sh"

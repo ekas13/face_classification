@@ -116,4 +116,3 @@ class TestTrainingProcess:
         has_changed = any(not torch.equal(initial_params[name], updated_params[name]) for name in initial_params)
 
         assert has_changed, "Model parameters should have changed after training"
-
