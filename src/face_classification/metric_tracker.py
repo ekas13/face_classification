@@ -8,6 +8,7 @@ wandb_logger = pl.loggers.WandbLogger(project="face_classification")
 
 
 class MetricTracker(Callback):
+    """Metric tracker for logging metrics to wandb"""
     def __init__(self, val_samples, num_samples=8):
         super().__init__()
         self.val_imgs, self.val_labels = val_samples

@@ -1,5 +1,6 @@
 import numpy as np
 import onnxruntime
+import torchvision.transforms as transforms
 from fastapi import FastAPI
 
 from face_classification.evaluate import evaluate
@@ -12,10 +13,6 @@ from PIL import Image
 @app.get("/predict_single_image")
 def predict_single_image(image_path: str):
     """Predict using ONNX model."""
-    import onnxruntime
-    import torchvision.transforms as transforms
-    from PIL import Image
-
     # Load the ONNX model
     model = onnxruntime.InferenceSession("models/model_final.onnx")
 
