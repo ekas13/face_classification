@@ -38,9 +38,6 @@ def train(config_name: str = "default_config") -> None:
     torch.manual_seed(cfg.seed)
     hparams = cfg.train
 
-    run = wandb.init(project="face_classification", config=OmegaConf.to_container(hparams))  # type: ignore
-    wandb.log(OmegaConf.to_container(hparams))  # type: ignore
-
     if hparams.use_tensorflow_profiler:
         with profile(
             activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA],
@@ -69,6 +66,11 @@ def train(config_name: str = "default_config") -> None:
 
 
 def run_training(cfg, hparams) -> None:
+    run = wandb.init(
+        entity="face_classification", project="face_classification", config=OmegaConf.to_container(hparams)
+    )  # type: ignore
+    wandb.log(OmegaConf.to_container(hparams))  # type: ignore
+
     train_set = FaceDataset(mode="train")
     val_set = FaceDataset(mode="val")
     train_dataloader = torch.utils.data.DataLoader(
@@ -101,6 +103,28 @@ def run_training(cfg, hparams) -> None:
         logger=WandbLogger(project="face_classification"),
     )
     trainer.fit(model, train_dataloader, val_dataloaders=val_dataloader)
+
+    best_model_path = checkpoint_callback.best_model_path
+
+    # Log the model to W&B registry
+    if best_model_path:  # Ensure a model checkpoint exists
+        artifact = wandb.Artifact(
+            name="face_classification_model",
+            type="model",
+            description="A model trained to classify face images",
+        )
+        artifact.add_file(best_model_path)  # Add the saved model file
+        run.log_artifact(artifact)  # Log artifact to W&B
+
+        # Link the artifact to the model registry
+        artifact.wait()  # Ensure artifact is fully uploaded before linking
+        artifact.aliases.append("latest")  # Add alias for the artifact version
+        artifact.aliases.append(f"v{artifact.version}")
+
+        # Link the artifact to the registry
+        artifact.link(
+            target_path="vbranica-danmarks-tekniske-universitet-dtu-org/wandb-registry-face_classification_registry/Model_collection:latest"
+        )  # Replace with your registry name
 
 
 if __name__ == "__main__":
