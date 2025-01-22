@@ -48,20 +48,5 @@ steps:
     'WANDB_API_KEY=projects/294894715547/secrets/WANDB_API_KEY_NANDOR:latest'
   ]
 
-# Ensure Cloud Run Allows Unauthenticated Access
-- name: 'gcr.io/cloud-builders/gcloud'
-  id: 'Allow Unauthenticated Access'
-  waitFor: ['Deploy to Cloud Run']  # Ensures this runs after deployment
-  args: [
-    'run',
-    'services',
-    'add-iam-policy-binding',
-    'app-docker-image',
-    '--region',
-    'europe-west1',
-    '--member=allUsers',
-    '--role=roles/run.invoker'
-  ]
-
 options:
   logging: CLOUD_LOGGING_ONLY
