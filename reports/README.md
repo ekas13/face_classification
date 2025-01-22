@@ -119,7 +119,7 @@ will check the repositories and the code to verify your answers.
 > Answer:
 
 GROUP 28
-> 
+>
 ### Question 2
 > **Enter the study number for each member in the group**
 >
@@ -201,7 +201,7 @@ Why ResNet34?
 
 Yes, we implemented several rules and tools to ensure **code quality, formatting, typing, and documentation** in our project.
 
-- **Linting & Formatting:**  
+- **Linting & Formatting:**
   We used **Ruff** for **linting and enforcing style guidelines**. The configuration in our `pyproject.toml` file includes:
   ```toml
   [tool.ruff]
@@ -212,14 +212,14 @@ Yes, we implemented several rules and tools to ensure **code quality, formatting
 - **I** ensures imports are properly formatted.
 - **D101** enforces docstring conventions - to be more exact it forces us to docstring explain every defined class in detail in our project
 
-- **Typing**  
-    While Python is dynamically typed, using **type hints** (for return types and function arguments) improves readability and prevents errors.  
+- **Typing**
+    While Python is dynamically typed, using **type hints** (for return types and function arguments) improves readability and prevents errors.
     We ensured that function signatures followed **PEP 484** typing conventions.
 
-- **Documentation**  
-    We maintained a **`README.md`** file for an overview of the project.  
+- **Documentation**
+    We maintained a **`README.md`** file for an overview of the project.
 
-Why each of these matter: 
+Why each of these matter:
 Linting & Formatting ensure consistency and more importantly make collaboration and version control easier (i.e. remove unnecessray conflicts on git). Typing helps catch errors early and improves readability in the code. Documentation makes it easier for new developers and colleagues to understand parts of the project they didn't work on but still need to understand or allter.
 
 
@@ -438,7 +438,7 @@ We used the following GCP services in our project:
 >
 > Answer:
 
-We used Google Compute Engine (GCE) to run our machine learning workloads and support various backend services. 
+We used Google Compute Engine (GCE) to run our machine learning workloads and support various backend services.
 For our project, we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM for the training and evaluating the models pushed to main immediately with Vertex AI. For training and API hosting later, we used n1-standard-4 instances with 4 vCPUs, 16GB RAM, and attached NVIDIA T4 GPUs. Our Compute Engine VMs were integrated with Cloud Storage for dataset management and Vertex AI for model training.
 
 ### Question 19
@@ -457,7 +457,7 @@ Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](
 >
 > Answer:
 
-[Our repositories](figures/registry_1.png) in Artifact registry and all the different [docker images](figures/registry_2.png) in the group28-repository. 
+[Our repositories](figures/registry_1.png) in Artifact registry and all the different [docker images](figures/registry_2.png) in the group28-repository.
 
 ### Question 21
 
@@ -503,7 +503,7 @@ gcloud ai custom-jobs create \
     --command 'python src/my_project/train.py' \
     --args '["--epochs", "10"]'
 
-Additionally, Vertex AI provided seamless integration with Cloud Storage for data handling and automatic GPU allocation. 
+Additionally, Vertex AI provided seamless integration with Cloud Storage for data handling and automatic GPU allocation.
 In the end for vertex we added the build and run automatically to a trigger everytime it pushes to main and both have to be successful (it's in the pipeline) before merging into main.
 
 ## Deployment
