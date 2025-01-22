@@ -1,8 +1,7 @@
 import pytorch_lightning as pl
 import torch
-from pytorch_lightning.callbacks import Callback
-
 import wandb
+from pytorch_lightning.callbacks import Callback
 
 wandb.login()
 wandb_logger = pl.loggers.WandbLogger(project="face_classification")
