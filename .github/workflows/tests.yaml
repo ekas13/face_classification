@@ -36,9 +36,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ matrix.os }}-py${{ matrix.python-version }}-pt${{ matrix.pytorch-version }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ matrix.operating-system }}-py${{ matrix.python-version }}-pt${{ matrix.torch-version }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            restore-keys: ${{ matrix.os }}-py${{ matrix.python-version }}-pt${{ matrix.pytorch-version }}-pip-
+            restore-keys: ${{ matrix.operating-system }}-py${{ matrix.python-version }}-pt${{ matrix.torch-version }}-pip-
 
       - name: Install dependencies
         run: |
@@ -46,7 +46,17 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements_tests.txt
           pip install .
+          pip install dvc 'dvc[gs]'
           pip list
+
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Pull data from GCP (via DVC)
+        run: |
+          dvc pull --no-run-cache
 
       - name: Run tests & coverage
         env:
