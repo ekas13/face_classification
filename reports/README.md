@@ -273,7 +273,7 @@ Linting & Formatting ensure consistency and more importantly make collaboration 
 >
 > Answer:
 
---- question 9 fill here ---
+We made use of both branches and PRs in our project. Each member created a branch for a specific task or group of related tasks they were working on and occasionally for any fixes related to previously merged code. To merge code into the main branch, we used PRs, each of which required approval from at least one other team member. Before approving, we made sure no conflicts existed, and if there were any, we would merge the main branch into the working branch to resolve them. Once no conflicts existed, we would approve the PR and merge the code into the main branch. This process helped ensure code quality and better collaboration within the team.
 
 ### Question 10
 
@@ -306,7 +306,15 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 >
 > Answer:
 
---- question 11 fill here ---
+For continuous integration, we use three workflows to handle code formatting, pre-commit checks, and unit tests.
+- **Unit tests**: This workflow runs tests on multiple operating systems (*ubuntu-latest*, *windows-latest*, *macos-latest*), Python versions (*3.10*, *3.11*, *3.12*) and with different versions of PyTorch (*2.4.0*, *2.5.0*, *2.5.1*). It caches pip dependencies using actions/cache to speed up subsequent runs. In addition, it pulls data from Google Cloud Platform using DVC and runs tests with coverage, ensuring that our code is properly tested across various configurations.
+- **Code formatting**: We use ruff for checking and formatting code, ensuring consistent style across the project. This check runs on every push or pull request to the main branch.
+- **Pre-commit**: Using pre-commit, we check for issues that can be automatically fixed before committing changes, such as removing trailing whitespaces, fixing end-of-file newlines and detect merge conflicts. This process is triggered on both push and pull request events to the main branch.
+
+These git workflows help ensuring consistent quality, automated checks, and a throughout process across our project in an efficient way. They make it easier to catch issues early on, preventing problems from reaching the main branch.
+
+The workflows can be found [here](.github/workflows).
+
 
 ## Running code and tracking experiments
 
