@@ -55,11 +55,12 @@ jobs:
       env:
         DEPLOYED_MODEL_URL: ${{ env.DEPLOYED_MODEL_URL }}
       run: |
+        mkdir -p locust
         locust -f tests/performancetests/locustfile.py \
-          --headless -u 100 -r 10 --run-time 2m --host=$DEPLOYED_MODEL_URL --csv=/locust/results
+          --headless -u 100 -r 10 --run-time 2m --host=$DEPLOYED_MODEL_URL --csv=locust/results
 
     - name: Upload locust results
       uses: actions/upload-artifact@v4
       with:
-        name: locust-results
-        path: /locust
+        name: locust
+        path: locust
