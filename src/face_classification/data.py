@@ -2,6 +2,7 @@ import logging
 import os
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import torch
 import typer
 from PIL import Image

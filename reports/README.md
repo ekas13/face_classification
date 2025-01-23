@@ -118,8 +118,8 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 1 fill here ---
-
+GROUP 28
+>
 ### Question 2
 > **Enter the study number for each member in the group**
 >
@@ -129,7 +129,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 2 fill here ---
+s232469, s233025, s243169, s232458, s233576
 
 ### Question 3
 > **A requirement to the project is that you include a third-party package not covered in the course. What framework**
@@ -143,7 +143,12 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 3 fill here ---
+We chose to fine-tune a pre-trained ResNet34 model from the [torchvision library](https://pytorch.org/vision/main/models/generated/torchvision.models.resnet34.html). The ResNet34 model was originally trained on the ImageNet1k dataset, which consists of 1.2 million labeled images across 1,000 classes. This pretraining provides a strong foundation for transfer learning, especially for tasks with limited data like ours.
+
+Why ResNet34?
+- Residual Connections: ResNet34 utilizes residual blocks, which help mitigate the vanishing gradient problem and enable deeper networks to learn effectively.
+- Pretraining Benefits: The model’s pretrained weights on ImageNet1k allow it to extract generic image features that are transferable to our face recognition task.
+- Efficiency: ResNet34 strikes a balance between performance and computational efficiency, making it suitable for deployment on limited hardware resources.
 
 ## Coding environment
 
@@ -194,7 +199,32 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 6 fill here ---
+Yes, we implemented several rules and tools to ensure **code quality, formatting, typing, and documentation** in our project.
+
+- **Linting & Formatting:**
+  We used **Ruff** for **linting and enforcing style guidelines**. The configuration in our `pyproject.toml` file includes:
+  ```toml
+  [tool.ruff]
+  line-length = 120
+  [tool.ruff.lint]
+  select = ["I", "D101"]
+
+- **I** ensures imports are properly formatted.
+- **D101** enforces docstring conventions - to be more exact it forces us to docstring explain every defined class in detail in our project
+
+- **Typing**
+    While Python is dynamically typed, using **type hints** (for return types and function arguments) improves readability and prevents errors.
+    We ensured that function signatures followed **PEP 484** typing conventions.
+
+- **Documentation**
+    We maintained a **`README.md`** file for an overview of the project.
+
+Why each of these matter:
+Linting & Formatting ensure consistency and more importantly make collaboration and version control easier (i.e. remove unnecessray conflicts on git). Typing helps catch errors early and improves readability in the code. Documentation makes it easier for new developers and colleagues to understand parts of the project they didn't work on but still need to understand or allter.
+
+
+
+
 
 ## Version control
 
@@ -258,7 +288,8 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 10 fill here ---
+Yes, we used **DVC (Data Version Control)** in our project to manage and access data stored on **Google Cloud Storage (GCS)**.
+By integrating DVC, we were able to: Version control our data to make sure that different experiments used the correct dataset versions, easily access and pull data from Google Cloud Storage which then made collaboration and data sharing across team members efficient and most importantly later when deploying and adding CICD we ensured that our machine learning pipeline has easy access to the data and uses the exact version of it.
 
 ### Question 11
 
@@ -341,7 +372,10 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 15 fill here ---
+For our project we developed several images: one for training, evaluating, inference and deployment. For example to run the
+training docker image: `docker run train:latest`. Link to docker file: <https://github.com/ekas13/face_classification/blob/main/dockerfiles/train.dockerfile>
+
+We could build and run our docker images locally or we would build and run them with help of the cloud services: google build would build and then push them to the artifacts registry. Then they were also (command in the same yaml files) ran with Vertex AI (train, evaluate) and deployed with cloud run (api). All of this is triggered everytime when a push to main is done but could also be done manually through the UI or with some CLI prompts.
 
 ### Question 16
 
@@ -373,7 +407,23 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 17 fill here ---
+We used the following GCP services in our project:
+
+- **Cloud Storage (Bucket)** – Used for storing datasets, model artifacts, and logs. It provides scalable and secure object storage, ensuring data is easily accessible for training and deployment.
+
+- **Cloud Build** – Automates our CI/CD pipeline, enabling us to build, test, and deploy our containerized applications. It's connectd with Cloud Run and Artifact Registry to streamline the deployment process.
+
+- **Cloud Run** – Deploys our containerized application as a serverless service, so we can run our API.
+
+- **Artifact Registry** – Stores and manages Docker images securely. We used it to store our trained models and API container images before deploying them to Cloud Run and the built docker images before running them with Vertex AI.
+
+- **Cloud Monitoring** – Tracks the performance of our deployed services, providing metrics, logs, and alerts.
+
+- **Secret Manager** – Secures sensitive information such as API keys (e.g., `WANDB_API_KEY`). It ensures secrets are managed securely and accessed only by authorized services.
+
+- **IAM & Admin** – Manages permissions and roles, ensuring the correct users and our services have access to our resources while being secure.
+
+- **Vertex AI** – Used for training and deploying machine learning models at scale. It integrates with Cloud Storage and AI pipelines to streamline the ML workflow.
 
 ### Question 18
 
@@ -388,7 +438,8 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 18 fill here ---
+We used Google Compute Engine (GCE) to run our machine learning workloads and support various backend services.
+For our project, we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM for the training and evaluating the models pushed to main immediately with Vertex AI. For training and API hosting later, we used n1-standard-4 instances with 4 vCPUs, 16GB RAM, and attached NVIDIA T4 GPUs. Our Compute Engine VMs were integrated with Cloud Storage for dataset management and Vertex AI for model training.
 
 ### Question 19
 
@@ -397,7 +448,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 19 fill here ---
+Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](figures/bucket_2.png) and [cloudbuild bucket](figures/bucket_3.png).
 
 ### Question 20
 
@@ -406,7 +457,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 20 fill here ---
+[Our repositories](figures/registry_1.png) in Artifact registry and all the different [docker images](figures/registry_2.png) in the group28-repository.
 
 ### Question 21
 
@@ -415,7 +466,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 21 fill here ---
+The extensive [cloud build history](figures/build_1.png) all the triggers have also been added to main and more recent [cloudbuild history](figures/build_2.png).
 
 ### Question 22
 
@@ -430,7 +481,30 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 22 fill here ---
+Yes, we successfully trained our model in the cloud using **Google Cloud Compute Engine and Vertex AI**.
+
+Initially, we used **Compute Engine** to manually create virtual machines (VMs) with the required environment for training. We launched a **n1-highmem-2 instance** with **PyTorch pre-installed** and **GPU acceleration (NVIDIA T4)** using:
+
+gcloud compute instances create <instance-name> \
+    --zone europe-west4-a \
+    --image-family=pytorch-latest-gpu \
+    --image-project=deeplearning-platform-release \
+    --accelerator="type=nvidia-tesla-t4,count=1" \
+    --metadata="install-nvidia-driver=True" \
+    --maintenance-policy TERMINATE
+
+We then accessed the VM via SSH, installed dependencies, and ran our training scripts.
+
+Later, to automate and scale our training pipeline, we switched to Vertex AI. Using custom training jobs, we built a Docker container with our training script, pushed it to Artifact Registry, and ran it in Vertex AI with:
+gcloud ai custom-jobs create \
+    --region=europe-west1 \
+    --display-name=test-run \
+    --config=config.yaml \
+    --command 'python src/my_project/train.py' \
+    --args '["--epochs", "10"]'
+
+Additionally, Vertex AI provided seamless integration with Cloud Storage for data handling and automatic GPU allocation.
+In the end for vertex we added the build and run automatically to a trigger everytime it pushes to main and both have to be successful (it's in the pipeline) before merging into main.
 
 ## Deployment
 
