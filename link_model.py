@@ -7,26 +7,25 @@ from omegaconf import OmegaConf
 import wandb
 
 
-def link_model(version: str, aliases: list[str] = ["staging"]) -> None:
+def link_model(artifact_path: str, aliases: list[str] = ["staging"]) -> None:
     """
     Stage a specific model to the model registry.
 
     Args:
-        version: Version of the artifact to stage (e.g., "v8").
+        artifact_path: path of the artifact to stage.
         aliases: List of aliases to link the artifact with.
 
     Example:
-        model_management link-model v8 -a staging -a best
+        model_management link-model entity/project/artifact_name:version -a staging -a
 
     """
-    config = OmegaConf.load("configs/default_config.yaml")
+    config = OmegaConf.load("configs/urls/urls_config.yaml")
 
-    if version == "":
-        typer.echo("No artifact version provided. Exiting.")
+    if artifact_path == "":
+        typer.echo("No artifact path provided. Exiting.")
         return
 
-    model_registry_url = config.urls.wandb_registry
-    artifact_path = f"{model_registry_url}:{version}"
+    model_registry_url = config.wandb_registry
 
     api = wandb.Api(
         api_key=os.getenv("WANDB_API_KEY"),
