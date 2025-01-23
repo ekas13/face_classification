@@ -1,4 +1,5 @@
 import os
+import urllib.parse
 
 import typer
 
@@ -27,11 +28,11 @@ def link_model(artifact_path: str, aliases: list[str] = ["staging"]) -> None:
         overrides={"entity": os.getenv("WANDB_ENTITY"), "project": os.getenv("WANDB_PROJECT")},
     )
     _, _, artifact_name_version = artifact_path.split("/")
-    artifact_name, _ = artifact_name_version.split(":")
 
     artifact = api.artifact(artifact_path)
     artifact.link(
-        target_path=f"{os.getenv('WANDB_ENTITY')}/Face_classification_registry/{artifact_name}", aliases=aliases
+        target_path=f"vbranica-danmarks-tekniske-universitet-dtu-org/wandb-registry-face_classification_registry/Model_collection:latest",
+        aliases=aliases,
     )
     artifact.save()
     typer.echo(f"Artifact {artifact_path} linked to {aliases}")
