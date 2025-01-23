@@ -14,7 +14,6 @@ from face_classification.model import PretrainedResNet34
 
 app = typer.Typer()
 
-
 def download_from_gcs(bucket_name, source_blob_name, destination_file_name):
     """Downloads a file from GCS."""
     storage_client = storage.Client()
@@ -24,9 +23,10 @@ def download_from_gcs(bucket_name, source_blob_name, destination_file_name):
     blob.download_to_filename(destination_file_name)
     print(f"File {source_blob_name} downloaded to {destination_file_name}.")
 
-
 @app.command()
-def evaluate(model_path: str = None, config_name: str = "default_config") -> None:
+def evaluate(
+    model_path: str = None, config_name: str = "default_config"
+) -> None:
     """Evaluate a trained model using PyTorch Lightning Trainer."""
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
