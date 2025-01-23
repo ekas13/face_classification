@@ -4,6 +4,7 @@ import os
 import hydra
 import torch
 import typer
+import wandb
 from google.cloud import storage
 from omegaconf import OmegaConf
 from pytorch_lightning import Trainer
@@ -11,7 +12,6 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from torch.profiler import ProfilerActivity, profile, tensorboard_trace_handler
 
-import wandb
 from face_classification.data import FaceDataset
 from face_classification.metric_tracker import MetricTracker
 from face_classification.model import PretrainedResNet34
@@ -21,6 +21,7 @@ import wandb
 
 wandb.login()
 
+
 def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
     """Uploads a file to the GCS bucket."""
     storage_client = storage.Client()
@@ -29,6 +30,7 @@ def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
 
     blob.upload_from_filename(source_file_name)
     print(f"File {source_file_name} uploaded to {destination_blob_name}.")
+
 
 def save_model_to_onnx(model, checkpoint_path, output_path):
     """Loads the best PyTorch checkpoint and converts it to ONNX."""
@@ -41,12 +43,14 @@ def save_model_to_onnx(model, checkpoint_path, output_path):
 
     print(f"Model successfully exported to {output_path}")
 
+
 def save_pytorch_model_weights(model, checkpoint_path, output_path):
     """Saves the PyTorch model weights."""
     checkpoint = torch.load(checkpoint_path)
     model.load_state_dict(checkpoint["state_dict"])  # Load the checkpoint weights
     torch.save(model.state_dict(), output_path)
     print(f"PyTorch model weights saved to {output_path}")
+
 
 @app.command()
 def train(config_name: str = "default_config") -> None:
