@@ -5,6 +5,7 @@ import hydra
 import torch
 import typer
 import wandb
+from google.cloud import storage
 from omegaconf import OmegaConf
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -16,9 +17,38 @@ from face_classification.metric_tracker import MetricTracker
 from face_classification.model import PretrainedResNet34
 
 app = typer.Typer()
-import wandb
 
 wandb.login()
+
+
+def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
+    """Uploads a file to the GCS bucket."""
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(source_file_name)
+    print(f"File {source_file_name} uploaded to {destination_blob_name}.")
+
+
+def save_model_to_onnx(model, checkpoint_path, output_path):
+    """Loads the best PyTorch checkpoint and converts it to ONNX."""
+    checkpoint = torch.load(checkpoint_path)
+    model.load_state_dict(checkpoint["state_dict"])  # Load the checkpoint weights
+    model.eval()  # Ensure the model is in evaluation mode
+
+    dummy_input = torch.randn(1, 3, 256, 256, device="cpu")  # Adjust input dimensions as needed
+    model.to_onnx(output_path, dummy_input, export_params=True)
+
+    print(f"Model successfully exported to {output_path}")
+
+
+def save_pytorch_model_weights(model, checkpoint_path, output_path):
+    """Saves the PyTorch model weights."""
+    checkpoint = torch.load(checkpoint_path)
+    model.load_state_dict(checkpoint["state_dict"])  # Load the checkpoint weights
+    torch.save(model.state_dict(), output_path)
+    print(f"PyTorch model weights saved to {output_path}")
 
 
 @app.command()
@@ -108,6 +138,19 @@ def run_training(cfg, hparams) -> None:
 
     # Log the model to W&B registry
     if best_model_path:  # Ensure a model checkpoint exists
+        # Save the ONNX model
+        onnx_model_path = "models/model_final.onnx"
+        save_model_to_onnx(model, best_model_path, onnx_model_path)
+
+        # Save the PyTorch model weights
+        pytorch_weights_path = "models/model_weights.pth"
+        save_pytorch_model_weights(model, best_model_path, pytorch_weights_path)
+
+        # Upload models to GCP
+        bucket_name = "face-classification-models"
+        upload_to_gcs(bucket_name, onnx_model_path, "models/model_final.onnx")
+        upload_to_gcs(bucket_name, pytorch_weights_path, "models/model_weights.pth")
+
         artifact = wandb.Artifact(
             name="face_classification_model",
             type="model",
@@ -122,9 +165,7 @@ def run_training(cfg, hparams) -> None:
         artifact.aliases.append(f"v{artifact.version}")
 
         # Link the artifact to the registry
-        artifact.link(
-            target_path="vbranica-danmarks-tekniske-universitet-dtu-org/wandb-registry-face_classification_registry/Model_collection:latest"
-        )  # Replace with your registry name
+        artifact.link(target_path=cfg.urls.wandb_registry)
 
 
 if __name__ == "__main__":
