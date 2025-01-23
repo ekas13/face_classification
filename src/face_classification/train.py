@@ -17,7 +17,6 @@ from face_classification.metric_tracker import MetricTracker
 from face_classification.model import PretrainedResNet34
 
 app = typer.Typer()
-import wandb
 
 wandb.login()
 
@@ -166,9 +165,7 @@ def run_training(cfg, hparams) -> None:
         artifact.aliases.append(f"v{artifact.version}")
 
         # Link the artifact to the registry
-        artifact.link(
-            target_path="vbranica-danmarks-tekniske-universitet-dtu-org/wandb-registry-face_classification_registry/Model_collection:latest"
-        )  # Replace with your registry name
+        artifact.link(target_path=cfg.urls.wandb_registry)
 
 
 if __name__ == "__main__":
