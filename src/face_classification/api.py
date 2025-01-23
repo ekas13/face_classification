@@ -26,7 +26,7 @@ def download_from_gcs(bucket_name, source_blob_name, destination_file_name):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Context manager to start and stop the lifespan events of the FastAPI application."""
-    global model, transform, imagenet_classes
+    global model, transform
     # Load the ONNX model
     model_path = "models/model_final.onnx"
     if not os.path.exists(model_path):
@@ -94,6 +94,7 @@ async def classify_image(file: UploadFile = File(...)):
 
         return {"filename": file.filename, "prediction": prediction, "probabilities": probabilities.tolist()}
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/train_model")
