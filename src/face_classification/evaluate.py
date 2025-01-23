@@ -1,10 +1,9 @@
 import logging
-import os
-import sys
 
 import hydra
 import torch
 import typer
+from google.cloud import storage
 from omegaconf import OmegaConf
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import WandbLogger
@@ -15,10 +14,18 @@ from face_classification.model import PretrainedResNet34
 
 app = typer.Typer()
 
+def download_from_gcs(bucket_name, source_blob_name, destination_file_name):
+    """Downloads a file from GCS."""
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(source_blob_name)
+
+    blob.download_to_filename(destination_file_name)
+    print(f"File {source_blob_name} downloaded to {destination_file_name}.")
 
 @app.command()
 def evaluate(
-    model_path: str = "models/checkpoints/model-epoch=29-val_acc=0.94.ckpt", config_name: str = "default_config"
+    model_path: str = None, config_name: str = "default_config"
 ) -> None:
     """Evaluate a trained model using PyTorch Lightning Trainer."""
     logger = logging.getLogger(__name__)
@@ -41,8 +48,20 @@ def evaluate(
     if model_path:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         checkpoint = torch.load(model_path, map_location=device)
-        model.load_state_dict(checkpoint["state_dict"])
+        model.load_state_dict(checkpoint)
         model.to(device)
+        logger.info("Model weights successfully loaded.")
+    else:
+        logger.info("Model path not provided. Downloading model from GCP bucket.")
+        model_path = "models/model_weights_local.pth"
+        bucket_name = "face-classification-models"
+        source_blob_name = "models/model_weights.pth"
+        download_from_gcs(bucket_name, source_blob_name, model_path)
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        checkpoint = torch.load(model_path, map_location=device)
+        model.load_state_dict(checkpoint)
+        model.to(device)
+        logger.info("Model weights successfully downloaded and loaded from GCP.")
 
     # Initialize the PyTorch Lightning trainer
     trainer = Trainer(accelerator=hparams.accelerator, logger=WandbLogger(project="face_classification"))
