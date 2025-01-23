@@ -23,6 +23,7 @@ def download_from_gcs(bucket_name, source_blob_name, destination_file_name):
     blob.download_to_filename(destination_file_name)
     print(f"File {source_blob_name} downloaded to {destination_file_name}.")
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Context manager to start and stop the lifespan events of the FastAPI application."""
@@ -52,10 +53,12 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+
 @app.get("/")
 async def root():
     """Root endpoint."""
     return {"message": "Backend here!"}
+
 
 @app.get("/predict_single_image")
 def predict_single_image(image_path: str):
@@ -75,6 +78,7 @@ def predict_single_image(image_path: str):
     print(f"Predicted class: Person {prediction}")
 
     return probabilities, prediction
+
 
 # FastAPI endpoint for image classification
 @app.post("/classify/")
@@ -96,6 +100,7 @@ async def classify_image(file: UploadFile = File(...)):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/train_model")
 def train_model():
