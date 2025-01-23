@@ -50,7 +50,7 @@ def train(ctx: Context) -> None:
 def evaluate(ctx: Context, model_path: str = None) -> None:
     """Run evaluation with optional model path."""
     if model_path is None:
-        ctx.run(f"python src/{PROJECT_NAME}/evaluate.py models/model.pth", echo=True, pty=not WINDOWS)
+        ctx.run(f"python src/{PROJECT_NAME}/evaluate.py", echo=True, pty=not WINDOWS)
     else:
         ctx.run(f"python src/{PROJECT_NAME}/evaluate.py {model_path}", echo=True, pty=not WINDOWS)
 
