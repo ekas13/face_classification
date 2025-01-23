@@ -59,6 +59,7 @@ async def root():
     """Root endpoint."""
     return {"message": "Backend here!"}
 
+
 def predict_single_image(image_path: str):
     """Predict using ONNX model."""
     # Open and preprocess the image
