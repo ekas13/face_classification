@@ -165,9 +165,7 @@ def run_training(cfg, hparams) -> None:
         artifact.aliases.append(f"v{artifact.version}")
 
         # Link the artifact to the registry
-        artifact.link(
-            target_path=cfg.urls.wandb_registry
-        )
+        artifact.link(target_path=cfg.urls.wandb_registry)
 
 
 if __name__ == "__main__":
