@@ -38,6 +38,3 @@ def test_classify_endpoint():
 
             # Ensure probabilities is a list
             assert isinstance(response_data["probabilities"], list), "Probabilities is not a list"
-
-            # Print the response for debugging (optional)
-            print(response_data)
