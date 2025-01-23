@@ -1,21 +1,17 @@
-import os
-
 import pandas as pd
 import requests
 import streamlit as st
-import hydra
+import os
 
 def get_backend_url():
     """Get the URL of the backend service."""
-    with hydra.initialize(config_path="../../configs/urls", version_base=None):
-        cfg = hydra.compose(config_name="urls_config.yaml")
-    return cfg.backend
+    return os.environ.get("BACKEND", "http://localhost:8000")
 
 
 def classify_image(image, backend):
     """Send the image to the backend for classification."""
     predict_url = f"{backend}/classify/"
-    response = requests.post(predict_url, files={"file": image}, timeout=10)
+    response = requests.post(predict_url, files={"file": image}, timeout=30)
     if response.status_code == 200:
         return response.json()
     return None
@@ -48,7 +44,6 @@ def main() -> None:
             data = {"Class": [i for i in range(len(probabilities))], "Probability": probabilities}
             df = pd.DataFrame(data)
             df.set_index("Class", inplace=True)
-            print(df)
             st.bar_chart(df, y="Probability")
         else:
             st.write("Failed to get prediction")
