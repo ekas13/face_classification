@@ -21,3 +21,5 @@ onnxruntime==1.20.1
 onnx==1.17.0
 streamlit==1.41.1
 google-cloud-run==0.10.14
+google-cloud-storage==2.19.0
+python-multipart==0.0.20

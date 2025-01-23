@@ -9,10 +9,11 @@ class FaceClassificationClient:
     def __init__(self, base_url="http://localhost:8000"):
         self.base_url = base_url
 
-    def predict_single_image(self, image_path):
-        url = f"{self.base_url}/predict_single_image"
-        params = {"image_path": image_path}
-        response = requests.get(url, params=params)
+    def classify_image(self, image_path):
+        url = f"{self.base_url}/classify/"
+        with open(image_path, "rb") as image_file:
+            files = {"file": (image_path, image_file, "image/jpeg")}
+            response = requests.post(url, files=files)
         return response.json()
 
     def train_model(self):
@@ -37,18 +38,18 @@ def main():
     client = FaceClassificationClient(base_url=base_url)
 
     while True:
-        command = input("Enter command (train, evaluate, predict, exit): ").strip().lower()
+        command = input("Enter command (train, evaluate, classify, exit): ").strip().lower()
         if command == "train":
             print(client.train_model())
         elif command == "evaluate":
             print(client.evaluate_model())
-        elif command == "predict":
+        elif command == "classify":
             image_path = input("Enter image path: ").strip()
-            print(client.predict_single_image(image_path))
+            print(client.classify_image(image_path))
         elif command == "exit":
             break
         else:
-            print("Unknown command. Please enter 'train', 'evaluate', 'predict', or 'exit'.")
+            print("Unknown command. Please enter 'train', 'evaluate', 'classify', or 'exit'.")
 
 
 if __name__ == "__main__":
