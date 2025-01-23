@@ -1,0 +1,2 @@
+backend: https://app-docker-image-294894715547.europe-west1.run.app
+wandb_registry: vbranica-danmarks-tekniske-universitet-dtu-org/wandb-registry-face_classification_registry/Model_collection:latest

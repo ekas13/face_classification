@@ -3,24 +3,18 @@ import os
 import pandas as pd
 import requests
 import streamlit as st
-from google.cloud import run_v2
-
+import hydra
 
 def get_backend_url():
     """Get the URL of the backend service."""
-    return "http://localhost:8000"
-    parent = "projects/MLOPS-Group28/locations/europe-west1"
-    client = run_v2.ServicesClient()
-    services = client.list_services(parent=parent)
-    for service in services:
-        if service.name.split("/")[-1] == "production-model":
-            return service.uri
-    return os.environ.get("BACKEND", None)
+    with hydra.initialize(config_path="../../configs/urls", version_base=None):
+        cfg = hydra.compose(config_name="urls_config.yaml")
+    return cfg.backend
 
 
 def classify_image(image, backend):
     """Send the image to the backend for classification."""
-    predict_url = f"{backend}/classify"
+    predict_url = f"{backend}/classify/"
     response = requests.post(predict_url, files={"file": image}, timeout=10)
     if response.status_code == 200:
         return response.json()
@@ -44,17 +38,18 @@ def main() -> None:
 
         if result is not None:
             prediction = result["prediction"]
-            # probabilities = result["probabilities"]
+            probabilities = result["probabilities"][0][0]
 
             # show the image and prediction
             st.image(image, caption="Uploaded Image")
             st.write(f"Prediction: this is face {prediction}.")
 
             # make a nice bar chart
-            # data = {"Class": [f"Class {i}" for i in range(10)], "Probability": probabilities}
-            # df = pd.DataFrame(data)
-            # df.set_index("Class", inplace=True)
-            # st.bar_chart(df, y="Probability")
+            data = {"Class": [i for i in range(len(probabilities))], "Probability": probabilities}
+            df = pd.DataFrame(data)
+            df.set_index("Class", inplace=True)
+            print(df)
+            st.bar_chart(df, y="Probability")
         else:
             st.write("Failed to get prediction")
 
