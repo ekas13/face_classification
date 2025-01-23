@@ -1,7 +1,9 @@
+import os
+
 import pandas as pd
 import requests
 import streamlit as st
-import os
+
 
 def get_backend_url():
     """Get the URL of the backend service."""
