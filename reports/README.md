@@ -210,40 +210,38 @@ pytest tests
 >
 > Answer:
 From the cookiecutter template we have filled out the following folders and files:
-- `.github/`: GitHub-specific files, including workflows and actions.
-- `configs/`: Configuration files for experiments and training.
-- `data/`: Directory for the dataset in raw and processed format.
-- `dockerfiles/`: Dockerfile definitions for building container images.
-- `models/`: Directory for storing trained models and checkpoints.
-- `reports/`: Generated reports and related files.
-- `src/`: Source code for the project.
-- `tests/`: Unit tests and test-related files.
-- `wandb/`: Weights & Biases logs and configuration files.
-- `./.gitignore`: Specifies files and directories for Git to ignore.
-- `./LICENSE`: Contains the licensing information for the project.
-- `./pyproject.toml`: Configuration file for Python project tools.
-- `./tasks.py`: Contains automation tasks for the project.
-- `./requirements.txt`: Lists main project dependencies.
-- `./.pre-commit-config.yaml`: Configuration for pre-commit hooks.
-- `./.env`: Environment variables for the project.
+- `.github/`
+- `configs/`
+- `data/`
+- `dockerfiles/`
+- `models/`
+- `reports/`
+- `src/`
+- `tests/`
+- `wandb/`
+- `./.gitignore`
+- `./LICENSE`
+- `./pyproject.toml`
+- `./tasks.py`
+- `./requirements.txt`
+- `./.pre-commit-config.yaml`
 
 We have removed the following folders and files:
 - `docs/`: This Readme file serves the purpose of documentation instead.
 - `notebooks/`: We have used Python scripts for our project, because they are better aligned with the course's learning objectives.
-- `./requirements_dev.txt`: Lists development dependencies. All our dependencies were included in the other requirement files, so there was not any need to use this file.
+- `./requirements_dev.txt`: All our dependencies were included in the other requirement files, so there was not any need to use this file.
+- `./.env`: We have not used this file to store environment variables.
+
 
 We have added the following folders and files:
 - `cloudbuild/`: Configuration files for Google Cloud Build.
 - `./.dvcignore`: Specifies files and directories for DVC to ignore.
-- `./environment.yaml`: Defines the conda environment and its dependencies.
 - `./requirements_tests.txt`: Lists dependencies required for running tests.
 - `./requirements_frontend.txt`: Lists dependencies required for the frontend.
 - `./.coveragerc`: Configuration file for measuring code coverage.
 - `./.vscode`: It contains the debug configuration.
 
-The overall structure of our repository can be seen here:
-
-![my_image](figures/folder_structure.png)
+The overall structure of our repository can be seen here: [folder structure](figures/folder_structure.png)
 
 
 ### Question 6
@@ -637,7 +635,9 @@ We successfully deployed our API both locally and on the cloud using Cloud Run. 
 >
 > Answer:
 
-We performed 2 UNIT tests on the API, one on the root endpoint and another for the /classify/ endpoint. Both checked that the response is in an expected format and with expected values. For Load Testing we used Locust and the result was 13.15 req/s. We set a fixed timer for the Locust test and it ended up not crash our service so we had 0 failures.
+Overall, we had 12 tests for the whole project. Our tests are split into 9 UNIT tests, 2 integration tests on the API (one on the root endpoint and another for the /classify/ endpoint) and 1 peformance test.
+Our UNIT tests were then split into model and data tests, model tests doing checks on the model and the training procedure while data tests just did some sanity checks on the downloaded dataset.
+All API integration tests checked that the response is in an expected format and with expected values. For Load Testing we used Locust and the result was 13.15 req/s. We set a fixed timer for the Locust test and it ended up not crash our service so we had 0 failures.
 
 ### Question 26
 
@@ -744,20 +744,8 @@ Another challenge was setting up the ML workflow to trigger on adding the "stagi
 > Answer:
 
 Student 243169 was in charge of setting up logging and wandb, running a wandb sweep, developing and deploying frontend and implementing monitoring.
-Student s233576 was responsible for writing configuration files and setting up Hydra to manage hyperparameters, set up the continuous integration on the GitHub repository, including caching and testing for multiple operating systems, Python versions, and PyTorch versions, linting and pre-commit hooks, set up continuous machine learning workflows for data and model registry changes.
-
-We all worked closely together throughout the project, meeting frequently to collaborate and address any challenges, reviewing pull requests and debating ideas.
-GitHub Copilot was used to help improving our code development process and ChatGPT to assist in debugging code provide suggestions for improvement.
-
+Student s233576 was responsible for writing configuration files and setting up Hydra to manage hyperparameters, set up the CI on the GitHub repository, including testing, linting and pre-commit hooks, set up CML workflows for data and model registry changes.
 Student s232469 was in charge of setting up the linter and other good coding practices, writing the necessary docker files for train and evaluate and setting up most of the cloud services. Meaning she created the cloud project, then put the data on the cloud storage (bucket), enabled dvc for data versioning, setting up the artifact registry, triggers ( Wrote the coudbuild yaml files) for building and running training and evaluate (Vertex ai and Engine) and later for deploying the api, added the secrets and handled the permissions for our service accounts.
-
-Student s232458 was responsible for:
-- Training the model and updating the PyTorch Lightning classes and updating Weights and Biases logging to achieve a smoother integration of the two. This way, it was possible to track the confusion matrix and how the prediction of a few handpicked images progresses.
-- Implementation of profiling with PyTorch to analyze our code.
-- Adding the Visual Studio Code debugger.
-- Creating the initial version of the backend and its corresponding Docker container, which (at this initial state) was deployed to Google Cloud as a service via the UI.
-- The initial deployment process also involved creating a test client to verify if the backend works.
-- Creating the initial version of model inference with ONNX.
-- ChatGPT was used to help with the construction of the debugging configuration and the docker file.
-
-Student s233025 was in charge of setting up the initial cookiecutter template and evaluation. Furthermore, that same student was in charge of UNIT testing, code coverage, making the FastAPI application with load data testing and integration testing, and creating a trigger to a pipeline for the Locust test in GCP.
+Student s232458 was responsible for training the model and updating the PyTorch Lightning classes and updating Weights and Biases logging to achieve a smoother integration of the two. He implemented profiling with PyTorch to analyse our code. He created the initial version of the backend and its corresponding Docker container, which (at this initial state) was deployed to Google Cloud as a service via the UI. He created the initial version of model inference with ONNX.
+Student s233025 was responsible for setting up the initial cookiecutter template and evaluation. Furthermore, he was in charge of UNIT testing, code coverage, making the FastAPI application with load data testing and integration testing, and creating a trigger to a pipeline for the Locust test in GCP.
+GitHub Copilot was used to help improving our code development process and ChatGPT to assist in debugging code provide suggestions for improvement.
