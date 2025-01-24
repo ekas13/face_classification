@@ -493,7 +493,7 @@ Additionally, we have used `torch.profiler` to analyze our code and see how its 
 
 We used the following GCP services in our project:
 
-- **Cloud Storage (Bucket)** – Used for storing datasets, model artifacts, and logs. It provides scalable and secure object storage, ensuring data is easily accessible for training and deployment.
+- **Cloud Storage (Bucket)** – Used for storing datasets, model artifacts, and logs. Also, ensurs data is easily accessible for training and deployment.
 
 - **Cloud Build** – Automates our CI/CD pipeline, enabling us to build, test, and deploy our containerized applications. It's connectd with Cloud Run and Artifact Registry to streamline the deployment process.
 
@@ -503,11 +503,11 @@ We used the following GCP services in our project:
 
 - **Cloud Monitoring** – Tracks the performance of our deployed services, providing metrics, logs, and alerts.
 
-- **Secret Manager** – Secures sensitive information such as API keys (e.g., `WANDB_API_KEY`). It ensures secrets are managed securely and accessed only by authorized services.
+- **Secret Manager** – Secures sensitive information such as API keys (e.g., `WANDB_API_KEY`).
 
 - **IAM & Admin** – Manages permissions and roles, ensuring the correct users and our services have access to our resources while being secure.
 
-- **Vertex AI** – Used for training and deploying machine learning models at scale. It integrates with Cloud Storage and AI pipelines to streamline the ML workflow.
+- **Vertex AI** – Used for training and deploying machine learning models at scale. It integrates with Cloud Storage and AI pipelines for the ML workflow.
 
 ### Question 18
 
@@ -523,8 +523,7 @@ We used the following GCP services in our project:
 > Answer:
 
 We used Google Compute Engine (GCE) to run our machine learning workloads and support various backend services.
-For our project, we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM for the training and evaluating the models pushed to main immediately with Vertex AI. For training and API hosting later, we used n1-standard-4 instances with 4 vCPUs, 16GB RAM, and attached NVIDIA T4 GPUs. Our Compute Engine VMs were integrated with Cloud Storage for dataset management and Vertex AI for model training.
-
+For our project we did two versions of hardware: we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM for the training and evaluating the models pushed to main immediately with Vertex AI. For training and API hosting later, we used n1-standard-4 instances with 4 vCPUs, 16GB RAM, and attached NVIDIA T4 GPUs. Our Compute Engine VMs were integrated with Cloud Storage for dataset management and Vertex AI for model training. The artifact registry kept our created docker files while Vertex AI ran the multiple vm-s.
 ### Question 19
 
 > **Insert 1-2 images of your GCP bucket, such that we can see what data you have stored in it.**
@@ -532,7 +531,7 @@ For our project, we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM
 >
 > Answer:
 
-Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](figures/bucket_2.png) and [cloudbuild bucket](figures/bucket_3.png).
+Our buckets (![buckets](figures/bucket_1.png)) and their contents: ![data bucket](figures/bucket_2.png) and [cloudbuild bucket](figures/bucket_3.png).
 
 ### Question 20
 
@@ -541,7 +540,7 @@ Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](
 >
 > Answer:
 
-[Our repositories](figures/registry_1.png) in Artifact registry and all the different [docker images](figures/registry_2.png) in the group28-repository.
+![Our repositories](figures/registry_1.png) in Artifact registry and all the different ![docker images](figures/registry_2.png) in the group28-repository.
 
 ### Question 21
 
@@ -550,7 +549,7 @@ Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](
 >
 > Answer:
 
-The extensive [cloud build history](figures/build_1.png) all the triggers have also been added to main and more recent [cloudbuild history](figures/build_2.png).
+The extensive ![cloud build history](figures/build_1.png) all the triggers have also been added to main and more recent ![cloudbuild history](figures/build_2.png).
 
 ### Question 22
 
@@ -726,8 +725,8 @@ Once the API is deployed we have added some system monitoring that is reporting 
 >
 > Answer:
 
-Since we did a fairly good seperation of concerns for all of the weeks, different people struggled with different parts, but the most notable struggle was using the GCP correctly. GCP is an enormous system and getting used to it, understanding what and how it works was the biggest challenge by far. Specifically, we had a lot of issues with setting up various secrets on it and on the Github itself, for building Docker images and deploying them. We tried to not have anything senstive saved in our repo as plain text, or in the code, so that took a lot of time to set up properly. Also, starting a sidecar which scrapes the /metrics Prometheus API endpoint to track system metrics took a lot longer than expected. Furthermore, doing any fixes for the .yaml files would take a long time to verify if they worked, which extended working hours way longer than expected at times. We also had some struggles with how to keep a track of metrics in PyTorch Lightning because it was too much of a blackbox, and we almost had to force ourselves to use it just to learn it since it almost proved more cumbersome than worth it in the end. 
-
+Since we did a fairly good seperation of concerns for all of the weeks, different people struggled with different parts, but the most notable struggle was using the GCP correctly. GCP is an enormous system and getting used to it, understanding what and how it works was the biggest challenge by far. Specifically, we had a lot of issues with setting up various secrets on it and on the Github itself, for building Docker images and deploying them. We tried to not have anything senstive saved in our repo as plain text, or in the code, so that took a lot of time to set up properly. Furthermore, doing any fixes for the .yaml files would take a long time to verify if they worked, which extended working hours way longer than expected at times. We also had some struggles with how to keep a track of metrics in PyTorch Lightning because it was too much of a blackbox, and we almost had to force ourselves to use it just to learn it since it almost proved more cumbersome than worth it in the end. 
+Another challenge was setting up the ML workflow to trigger on adding the "staging" alias to the model. We created the webhook on W&B, wrote the GitHub Actions workflow (stage_model.yaml), model performance test, and the link_model.py script ([M19_continuous_workflows](https://github.com/ekas13/face_classification/tree/M19_continuous_workflows) branch). . However, the action wasn't triggered when the alias was added to a model version in the model registry. We tried to fix it by validating payloads, testing the webhook setup, and debugging the workflow, but couldn't resolve the issue.
 ### Question 31
 
 > **State the individual contributions of each team member. This is required information from DTU, because we need to**
@@ -745,13 +744,8 @@ Since we did a fairly good seperation of concerns for all of the weeks, differen
 > Answer:
 
 Student 243169 was in charge of setting up logging and wandb, running a wandb sweep, developing and deploying frontend and implementing monitoring.
-
 Student s233576 was responsible for writing configuration files and setting up Hydra to manage hyperparameters, set up the CI on the GitHub repository, including testing, linting and pre-commit hooks, set up CML workflows for data and model registry changes.
-
 Student s232469 was in charge of setting up the linter and other good coding practices, writing the necessary docker files for train and evaluate and setting up most of the cloud services. Meaning she created the cloud project, then put the data on the cloud storage (bucket), enabled dvc for data versioning, setting up the artifact registry, triggers ( Wrote the coudbuild yaml files) for building and running training and evaluate (Vertex ai and Engine) and later for deploying the api, added the secrets and handled the permissions for our service accounts.
-
 Student s232458 was responsible for training the model and updating the PyTorch Lightning classes and updating Weights and Biases logging to achieve a smoother integration of the two. He implemented profiling with PyTorch to analyse our code. He created the initial version of the backend and its corresponding Docker container, which (at this initial state) was deployed to Google Cloud as a service via the UI. He created the initial version of model inference with ONNX.
-
 Student s233025 was responsible for setting up the initial cookiecutter template and evaluation. Furthermore, he was in charge of UNIT testing, code coverage, making the FastAPI application with load data testing and integration testing, and creating a trigger to a pipeline for the Locust test in GCP.
-
 GitHub Copilot was used to help improving our code development process and ChatGPT to assist in debugging code provide suggestions for improvement.
