@@ -167,8 +167,34 @@ Why ResNet34?
 > *complete copy of our development environment, one would have to run the following commands*
 >
 > Answer:
+Note that in order to be able to run the project locally, integration with Weights & Biases (wandb) and Google cloud is necessary, since the data is accessed from Google Cloud via dvc and logging takes place via wandb. 
+We used conda environment with Python 3.11 for managing our dependecies.  The list of dependencies was auto generated using pipreqs.
+To get a obtain a copy of our environment, one would have to run the following commands:
+```bash
+# Clone the repository
+git https://github.com/ekas13/face_classification.git
+cd face_classification
 
---- question 4 fill here ---
+# Create a conda environment with Python 3.11
+pip install invoke==2.2.0 dvc==3.58.0
+invoke create-environment
+invoke requirements
+
+# We use the project in developer mode
+pip install -e .
+
+# Set up your wandb account on https://wandb.ai/, then log in here:
+wandb login
+
+# Set up your google cloud account depending on what platform you are using: https://cloud.google.com/sdk/docs/install. Next, contact us to get access to our project on Google Cloud, so that you can access the data and the services. Then log in here:
+gcloud auth application-default login
+
+# Pull the data
+dvc pull --no-run-cache
+
+# Verify that environment is set up correctly
+pytest tests
+```
 
 ### Question 5
 
@@ -183,8 +209,42 @@ Why ResNet34?
 > *experiments.*
 >
 > Answer:
+From the cookiecutter template we have filled out the following folders and files:
+- `.github/`: GitHub-specific files, including workflows and actions.
+- `configs/`: Configuration files for experiments and training.
+- `data/`: Directory for the dataset in raw and processed format.
+- `dockerfiles/`: Dockerfile definitions for building container images.
+- `models/`: Directory for storing trained models and checkpoints.
+- `reports/`: Generated reports and related files.
+- `src/`: Source code for the project.
+- `tests/`: Unit tests and test-related files.
+- `wandb/`: Weights & Biases logs and configuration files.
+- `./.gitignore`: Specifies files and directories for Git to ignore.
+- `./LICENSE`: Contains the licensing information for the project.
+- `./pyproject.toml`: Configuration file for Python project tools.
+- `./tasks.py`: Contains automation tasks for the project.
+- `./requirements.txt`: Lists main project dependencies.
+- `./.pre-commit-config.yaml`: Configuration for pre-commit hooks.
+- `./.env`: Environment variables for the project.
 
---- question 5 fill here ---
+We have removed the following folders and files:
+- `docs/`: This Readme file serves the purpose of documentation instead.
+- `notebooks/`: We have used Python scripts for our project, because they are better aligned with the course's learning objectives.
+- `./requirements_dev.txt`: Lists development dependencies. All our dependencies were included in the other requirement files, so there was not any need to use this file.
+
+We have added the following folders and files:
+- `cloudbuild/`: Configuration files for Google Cloud Build.
+- `./.dvcignore`: Specifies files and directories for DVC to ignore.
+- `./environment.yaml`: Defines the conda environment and its dependencies.
+- `./requirements_tests.txt`: Lists dependencies required for running tests.
+- `./requirements_frontend.txt`: Lists dependencies required for the frontend.
+- `./.coveragerc`: Configuration file for measuring code coverage.
+- `./.vscode`: It contains the debug configuration.
+
+The overall structure of our repository can be seen here:
+
+![my_image](figures/folder_structure.png)
+
 
 ### Question 6
 
@@ -243,7 +303,7 @@ Linting & Formatting ensure consistency and more importantly make collaboration 
 >
 > Answer:
 
---- question 7 fill here ---
+We have implemented in total 9 UNIT tests which test our model and the training process alongside sanity checks for our data. There are also 2 integration tests for the API which test the root endpoint and the classify endpoint which is the main one used for classifying uploaded images. Finally, we have 1 performance test on the API via Locust which is only run after a merge to the main branch.
 
 ### Question 8
 
@@ -258,7 +318,7 @@ Linting & Formatting ensure consistency and more importantly make collaboration 
 >
 > Answer:
 
---- question 8 fill here ---
+The total code coverage we ended up with was 38%, which includes all of our source python files. It is not close to 100% but testing other stuff to get it to 100% would have been pointless. For example we did not test the preprocess data function in our data.py because we ran it only once and it is not ran in production. If our code had 100% coverage we would not necessarily trust it to be error free, it depends on how that coverage was accomplished. You could cheat to 100% coverage by testing every line of the code without any actual meaningful tests.
 
 ### Question 9
 
@@ -273,7 +333,7 @@ Linting & Formatting ensure consistency and more importantly make collaboration 
 >
 > Answer:
 
---- question 9 fill here ---
+We made use of both branches and PRs in our project. Each member created a branch for a specific task or group of related tasks they were working on and occasionally for any fixes related to previously merged code. To merge code into the main branch, we used PRs, each of which required approval from at least one other team member. Before approving, we made sure no conflicts existed, and if there were any, we would merge the main branch into the working branch to resolve them. Once no conflicts existed, we would approve the PR and merge the code into the main branch. This process helped ensure code quality and better collaboration within the team.
 
 ### Question 10
 
@@ -288,8 +348,8 @@ Linting & Formatting ensure consistency and more importantly make collaboration 
 >
 > Answer:
 
-Yes, we used **DVC (Data Version Control)** in our project to manage and access data stored on **Google Cloud Storage (GCS)**.
-By integrating DVC, we were able to: Version control our data to make sure that different experiments used the correct dataset versions, easily access and pull data from Google Cloud Storage which then made collaboration and data sharing across team members efficient and most importantly later when deploying and adding CICD we ensured that our machine learning pipeline has easy access to the data and uses the exact version of it.
+We did make use of **DVC (Data Version Control)** in our project to manage and access data stored on **Google Cloud Storage (GCS)**.
+By integrating DVC, we were able to version control our data, ensuring that different experiments used the correct dataset versions. It also simplified data access, allowing our team to easily pull data from Google Cloud Storage, whic made collaboration and data sharing across team members efficient. Furthermore and most importantly, it later streamlined the deployment process and implementation of CICD, by ensuring that our machine learning pipeline had easy access to the data and used the exact version of it.
 
 ### Question 11
 
@@ -306,7 +366,19 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 >
 > Answer:
 
---- question 11 fill here ---
+For continuous integration, we use three workflows to handle code formatting, pre-commit checks and unit tests.
+- **Unit tests**: This workflow runs tests on multiple operating systems (*ubuntu-latest*, *windows-latest*, *macos-latest*), Python versions (*3.10*, *3.11*, *3.12*) and with different versions of PyTorch (*2.4.0*, *2.5.0*, *2.5.1*). It caches pip dependencies using actions/cache to speed up subsequent runs. In addition, it pulls data from Google Cloud Platform using DVC and runs tests with coverage, ensuring that our code is properly tested across various configurations.
+- **Code formatting**: We use ruff for code formatting and linting, ensuring consistent style across the project. This check is triggered on every push or pull request to the main branch.
+- **Pre-commit**: Using pre-commit, we check for issues that can be automatically fixed before committing changes, such as removing trailing whitespaces and fixing end-of-file newlines. This process is triggered on push and pull request events to the main, helping automate and enforce code quality checks.
+
+Additionally, we integrated a continuous machine learning (CML) workflow for data checking.
+
+- **DVC workflow**: To ensure the integrity of our data, this workflow is triggered by DVC file changes on pull requests to main. It pulls the latest data from GCP and and generates a data statistics report, which is posted as a comment on the pull request.
+
+These CI and CML workflows help ensuring consistent quality, automated checks and an efficient process. They make it easier to catch issues early on, preventing problems from reaching the main branch, and simplify machine learning pipeline integration.
+
+The workflows can be found [here](.github/workflows).
+
 
 ## Running code and tracking experiments
 
@@ -325,7 +397,8 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 >
 > Answer:
 
---- question 12 fill here ---
+
+We used Hydra for experiment configuration. Configurations were stored in a `configs` folder containing `default_config.yaml` and subfolders for model, training, evaluation, and URLs. The `default_config.yaml` file defined default parameters, automatically loaded during execution. Overrides also allow dynamic modifications without altering the base configuration. For instance, running `python train.py --config-name=experiment_config train.epochs=30 model.fine_tuning=False` would allowed Hydra to load the specified configuration file and override settings with the command-line parameters, making it simple to create and adjust configurations for different experiments.
 
 ### Question 13
 
@@ -340,7 +413,8 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 >
 > Answer:
 
---- question 13 fill here ---
+We used config files to ensure reproducibility and consistency in our experiments. For each run, metrics such as training and validation loss and accuracy were logged to WandB, providing detailed insights into the model's performance.
+The usage of hydra make sit easy to reproduce an experiment, as we would only need to retrieve the relevant config file from the experiment logs and use it to rerun the script with identical settings. By keeping all hyperparameters in one place and logging each experiment's progress and artifacts, we made it easier to compare different hyperparameter configurations and ensured consistency in the results between runs. This technique can help reducing variability while preserving all relevant data for future reference.
 
 ### Question 14
 
@@ -356,8 +430,20 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 > *As seen in the second image we are also tracking ... and ...*
 >
 > Answer:
+As seen in the first image, we have tracked training and validation loss as a function of the epochs. As can be seen from the attached image, training and validation loss consistently decrease throughout 10 epochs. Since the validation loss is not higher than the training loss, there is no sign of overfitting.
 
---- question 14 fill here ---
+As illustrated on the accuracy plot, the model reaches almost 100% training and validation accuracy by epoch 6. This is because we were fine-tuning a pretrained ResNet34, which is a relatively advanced model, on a relatively simple dataset.
+
+On top of the above-mentioned metrics, we have logged a confusion matrix. It is noted from the image that the model only had trouble with classifying one image from class 3 in the test set; all other predictions were correct. In order to gain more insight into the training, we have also handpicked a handful of images from the dataset and tracked how the model classifies them epoch by epoch.
+
+The config files and trained models are logged as artifacts to Weights & Biases (wandb) (and to Google Cloud as well), so that results can be reproduced later. We set the seed manually so that the weight initialization can also be reproduced. We have also implemented parameter sweeping with wandb.
+
+![my_image](figures/wandb_loss_plot.png)
+
+![my_image](figures/wandb_accuracy_plot.png)
+
+![my_image](figures/wandb_results.png)
+
 
 ### Question 15
 
@@ -389,9 +475,9 @@ We could build and run our docker images locally or we would build and run them 
 > *run of our main code at some point that showed ...*
 >
 > Answer:
+We have utilized Visual Studio Code's Python Debugger extension to debug the code of our model. In `.vscode/launch.json`, we have specified our configuration to launch a debugger on CPU for the training part of our model. We simply placed breakpoints in the part of the code we wished to inspect. It was really useful to efficiently check if the shape of the tensors was as expected and to gain insight into how the PyTorch Lightning functions and callbacks are used.
 
---- question 16 fill here ---
-
+Additionally, we have used `torch.profiler` to analyze our code and see how its performance could be improved. The profiler options are available in the `train_config.yaml` file. It was interesting to note that 20 percent of the time was spent transferring data between devices when we only trained our model for 1 epoch. If we trained our model for more epochs, this time was not significant. When training on CPU, around 82% of the host self-time was spent on convolution operations, 8% on batch norms, and 5% on max pooling.
 ## Working in the cloud
 
 > In the following section we would like to know more about your experience when developing in the cloud.
@@ -409,7 +495,7 @@ We could build and run our docker images locally or we would build and run them 
 
 We used the following GCP services in our project:
 
-- **Cloud Storage (Bucket)** – Used for storing datasets, model artifacts, and logs. It provides scalable and secure object storage, ensuring data is easily accessible for training and deployment.
+- **Cloud Storage (Bucket)** – Used for storing datasets, model artifacts, and logs. Also, ensurs data is easily accessible for training and deployment.
 
 - **Cloud Build** – Automates our CI/CD pipeline, enabling us to build, test, and deploy our containerized applications. It's connectd with Cloud Run and Artifact Registry to streamline the deployment process.
 
@@ -419,11 +505,11 @@ We used the following GCP services in our project:
 
 - **Cloud Monitoring** – Tracks the performance of our deployed services, providing metrics, logs, and alerts.
 
-- **Secret Manager** – Secures sensitive information such as API keys (e.g., `WANDB_API_KEY`). It ensures secrets are managed securely and accessed only by authorized services.
+- **Secret Manager** – Secures sensitive information such as API keys (e.g., `WANDB_API_KEY`).
 
 - **IAM & Admin** – Manages permissions and roles, ensuring the correct users and our services have access to our resources while being secure.
 
-- **Vertex AI** – Used for training and deploying machine learning models at scale. It integrates with Cloud Storage and AI pipelines to streamline the ML workflow.
+- **Vertex AI** – Used for training and deploying machine learning models at scale. It integrates with Cloud Storage and AI pipelines for the ML workflow.
 
 ### Question 18
 
@@ -439,8 +525,7 @@ We used the following GCP services in our project:
 > Answer:
 
 We used Google Compute Engine (GCE) to run our machine learning workloads and support various backend services.
-For our project, we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM for the training and evaluating the models pushed to main immediately with Vertex AI. For training and API hosting later, we used n1-standard-4 instances with 4 vCPUs, 16GB RAM, and attached NVIDIA T4 GPUs. Our Compute Engine VMs were integrated with Cloud Storage for dataset management and Vertex AI for model training.
-
+For our project we did two versions of hardware: we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM for the training and evaluating the models pushed to main immediately with Vertex AI. For training and API hosting later, we used n1-standard-4 instances with 4 vCPUs, 16GB RAM, and attached NVIDIA T4 GPUs. Our Compute Engine VMs were integrated with Cloud Storage for dataset management and Vertex AI for model training. The artifact registry kept our created docker files while Vertex AI ran the multiple vm-s.
 ### Question 19
 
 > **Insert 1-2 images of your GCP bucket, such that we can see what data you have stored in it.**
@@ -448,7 +533,7 @@ For our project, we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM
 >
 > Answer:
 
-Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](figures/bucket_2.png) and [cloudbuild bucket](figures/bucket_3.png).
+Our buckets (![buckets](figures/bucket_1.png)) and their contents: ![data bucket](figures/bucket_2.png) and [cloudbuild bucket](figures/bucket_3.png).
 
 ### Question 20
 
@@ -457,7 +542,7 @@ Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](
 >
 > Answer:
 
-[Our repositories](figures/registry_1.png) in Artifact registry and all the different [docker images](figures/registry_2.png) in the group28-repository.
+![Our repositories](figures/registry_1.png) in Artifact registry and all the different ![docker images](figures/registry_2.png) in the group28-repository.
 
 ### Question 21
 
@@ -466,7 +551,7 @@ Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](
 >
 > Answer:
 
-The extensive [cloud build history](figures/build_1.png) all the triggers have also been added to main and more recent [cloudbuild history](figures/build_2.png).
+The extensive ![cloud build history](figures/build_1.png) all the triggers have also been added to main and more recent ![cloudbuild history](figures/build_2.png).
 
 ### Question 22
 
@@ -521,7 +606,7 @@ In the end for vertex we added the build and run automatically to a trigger ever
 >
 > Answer:
 
---- question 23 fill here ---
+We wrote an API that utilizes our model's prediction capabilities. The main endpoint, /classify/, classifies an uploaded image and returns the class it belongs to and the probability distribution over all classes. We wrote the API in FastAPI, and loading the model is done using the GCP bucket we have created for it. On the startup, our API downloads the model if it doesnt already exist in its environment, and then is ready to classify images. We also wanted to add an additional endpoint called /evaluate/ which would return the statistics of evaluating the model on a test set. Alas, we did not have enough time for that in the end. We did manage to add some system monitoring by the end on top of what we had.
 
 ### Question 24
 
@@ -552,7 +637,7 @@ We successfully deployed our API both locally and on the cloud using Cloud Run. 
 >
 > Answer:
 
---- question 25 fill here ---
+We performed 2 UNIT tests on the API, one on the root endpoint and another for the /classify/ endpoint. Both checked that the response is in an expected format and with expected values. For Load Testing we used Locust and the result was 13.15 req/s. We set a fixed timer for the Locust test and it ended up not crash our service so we had 0 failures.
 
 ### Question 26
 
@@ -567,7 +652,7 @@ We successfully deployed our API both locally and on the cloud using Cloud Run. 
 >
 > Answer:
 
-"vilim's part" - Additionally, we added alerts which monitor the requests sent to our server. A suspicios amount of requests in a certain timeframe trigger automatic alerts to be sent to our email addressed, warning us of this behaviour.
+We implemented monitoring using Prometheus, which exposes /metrics api endpoint for collecting system metrics data, error_counter, request_counter and request_latency. We also managed to create a sidecar which scrapes /metrics endpoint in the cloud, but we did not include it in the final cloud run because it was too complicated to include it in deployment pipeline without manually adjusting the cloud run yaml file. We also implemented an SLO for request latency being more than 150 ms with a target of 90%. Additionally, we added alerts which monitor the requests sent to our server. A suspicios amount of requests in a certain timeframe trigger automatic alerts to be sent to our email addressed, warning us of this behaviour.
 
 ## Overall discussion of project
 
@@ -586,7 +671,8 @@ We successfully deployed our API both locally and on the cloud using Cloud Run. 
 >
 > Answer:
 
---- question 27 fill here ---
+We ended up using just above 50 dollars of credits, we ran out of credits on the last day and switched to free trial. Because of this, we don't have more precise billing data.
+Working in the cloud was definitely harder than working locally because the error messages in GCP logs are not as precise and much harder to find. It is much easier to get stuck on a small issue for a long time before finding the solution to the problem. On the bright side, training the model and building docker images can be much faster, especially if we dont have access to GPU locally.
 
 ### Question 28
 
@@ -602,7 +688,9 @@ We successfully deployed our API both locally and on the cloud using Cloud Run. 
 >
 > Answer:
 
---- question 28 fill here ---
+We have implemented a frontend for our API, which is available here: https://frontend-294894715547.europe-west1.run.app/. We did this to enable the user to easily upload an image and get a predicted label from the model alongside probabilities for each class label. It was implemented using streamlit library. The backend url was passed using as an environment variable in docker container.
+Additionally, we used the debugger extension for Visual Studio Code to make the debugging experience easier and more efficient. To achieve this, we had to create a `launch.json` to specify our configuration.
+On top of logging the expected graphs, we have used Weights & Biases to log a confusion matrix and track how the prediction of a few handpicked images changes as the training progresses.
 
 ### Question 29
 
@@ -619,7 +707,11 @@ We successfully deployed our API both locally and on the cloud using Cloud Run. 
 >
 > Answer:
 
---- question 29 fill here ---
+We start from the local setup. Locally, we can run training or evaluation via invoke commands, alongside setting up the API server and running the frontend for it. For every push to a pull request we run a pre-commit config, a code formatting check with ruff, UNIT tests, code coverage and an integration test.
+We also added Hydra for configs that we use for setting up hyperparameters for model setup, training and the evaluation process.
+Once the PR is merged into main, we have a few triggers from Github and GCP. The Github workflow is the Locust load data test. Triggers from GCP include a Vertex-AI training and a deployment trigger of our API. Both GCP triggers build a docker image that we have in our repo, run it and deploy it. They also do a pull from DVC to get the up to date data. The training in Vertex-AI is synced up with our Weigths & Biases group, so the report of the run is automatically uploaded to Weigths & Biases where we can see a summary of the training process.
+Once the API is deployed we have added some system monitoring that is reporting to the GCP. One thing we did extra was we manually deployed our frontend as well, but without automatizing it (we ran out of time for that). So we have a hosted frontend and the backend, which means users can just go to the link and try out the model.
+![my_image](figures/overview.jpg) 
 
 ### Question 30
 
@@ -633,7 +725,7 @@ We successfully deployed our API both locally and on the cloud using Cloud Run. 
 >
 > Answer:
 
---- question 30 fill here ---
+Since we did a fairly good seperation of concerns for all of the weeks, different people struggled with different parts, but the most notable struggle was using the GCP correctly. GCP is an enormous system and getting used to it, understanding what and how it works was the biggest challenge by far. Specifically, we had a lot of issues with setting up various secrets on it and on the Github itself, for building Docker images and deploying them. We tried to not have anything senstive saved in our repo as plain text, or in the code, so that took a lot of time to set up properly. Furthermore, doing any fixes for the .yaml files would take a long time to verify if they worked, which extended working hours way longer than expected at times. We also had some struggles with how to keep a track of metrics in PyTorch Lightning because it was too much of a blackbox, and we almost had to force ourselves to use it just to learn it since it almost proved more cumbersome than worth it in the end. 
 
 ### Question 31
 
@@ -651,5 +743,21 @@ We successfully deployed our API both locally and on the cloud using Cloud Run. 
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
-Student s232469 was in charge of setting up the linter and other good coding practices, writing the necessary docker files for train and evaluate and setting up most of the cloud services. Meaning she created the cloud project, then put the data on the cloud storage (bucket), enabled dvc for data versioning, setting up the artifact registry, triggers ( Wrote the coudbuild yaml files) for building and running training and evaluate (Vertex ai and Engine) and later for deploying the api, added the secrets and handled the permissions for our service accounts. 
+Student 243169 was in charge of setting up logging and wandb, running a wandb sweep, developing and deploying frontend and implementing monitoring.
+Student s233576 was responsible for writing configuration files and setting up Hydra to manage hyperparameters, set up the continuous integration on the GitHub repository, including caching and testing for multiple operating systems, Python versions, and PyTorch versions, linting and pre-commit hooks, set up continuous machine learning workflows for data and model registry changes.
+
+We all worked closely together throughout the project, meeting frequently to collaborate and address any challenges, reviewing pull requests and debating ideas.
+GitHub Copilot was used to help improving our code development process and ChatGPT to assist in debugging code provide suggestions for improvement.
+
+Student s232469 was in charge of setting up the linter and other good coding practices, writing the necessary docker files for train and evaluate and setting up most of the cloud services. Meaning she created the cloud project, then put the data on the cloud storage (bucket), enabled dvc for data versioning, setting up the artifact registry, triggers ( Wrote the coudbuild yaml files) for building and running training and evaluate (Vertex ai and Engine) and later for deploying the api, added the secrets and handled the permissions for our service accounts.
+
+Student s232458 was responsible for:
+- Training the model and updating the PyTorch Lightning classes and updating Weights and Biases logging to achieve a smoother integration of the two. This way, it was possible to track the confusion matrix and how the prediction of a few handpicked images progresses.
+- Implementation of profiling with PyTorch to analyze our code.
+- Adding the Visual Studio Code debugger.
+- Creating the initial version of the backend and its corresponding Docker container, which (at this initial state) was deployed to Google Cloud as a service via the UI.
+- The initial deployment process also involved creating a test client to verify if the backend works.
+- Creating the initial version of model inference with ONNX.
+- ChatGPT was used to help with the construction of the debugging configuration and the docker file.
+
+Student s233025 was in charge of setting up the initial cookiecutter template and evaluation. Furthermore, that same student was in charge of UNIT testing, code coverage, making the FastAPI application with load data testing and integration testing, and creating a trigger to a pipeline for the Locust test in GCP.
