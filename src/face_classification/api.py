@@ -9,6 +9,7 @@ import torchvision.transforms as transforms
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from google.cloud import storage
 from PIL import Image
+from prometheus_client import CollectorRegistry, Counter, Histogram, Summary, make_asgi_app
 
 from face_classification.evaluate import evaluate
 from face_classification.train import train
@@ -24,10 +25,15 @@ def download_from_gcs(bucket_name, source_blob_name, destination_file_name):
     print(f"File {source_blob_name} downloaded to {destination_file_name}.")
 
 
+MY_REGISTRY = CollectorRegistry()
+error_counter = Counter("prediction_error", "Number of prediction errors", registry=MY_REGISTRY)
+request_counter = Counter("prediction_requests", "Number of prediction requests", registry=MY_REGISTRY)
+request_latency = Histogram("prediction_latency_seconds", "Prediction latency in seconds", registry=MY_REGISTRY)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Context manager to start and stop the lifespan events of the FastAPI application."""
-    global model, transform
+    global model, transform, request_counter, runtime_counter
     # Load the ONNX model
     model_path = "models/model_final.onnx"
     if not os.path.exists(model_path):
@@ -52,6 +58,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.mount("/metrics", make_asgi_app(registry=MY_REGISTRY))
 
 
 @app.get("/")
@@ -66,7 +73,7 @@ def predict_single_image(image_path: str):
     # Open and preprocess the image
     image = Image.open(image_path).convert("RGB")  # Ensure 3 channels
     image = transform(image)
-    image = image.unsqueeze(0).numpy()
+    image = image.unsqueeze(0).numpy()  #type: ignore
 
     # Get the input name for the model
     input_name = model.get_inputs()[0].name
@@ -84,22 +91,24 @@ def predict_single_image(image_path: str):
 @app.post("/classify/")
 async def classify_image(file: UploadFile = File(...)):
     """Classify image endpoint."""
-    try:
-        # Save the uploaded file to a temporary location
-        with NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
-            shutil.copyfileobj(file.file, temp_file)
-            temp_file_path = temp_file.name
+    request_counter.inc()
+    with request_latency.time():
+        try:
+            # Save the uploaded file to a temporary location
+            with NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
+                shutil.copyfileobj(file.file, temp_file)
+                temp_file_path = temp_file.name
 
-        # Use the saved file for prediction
-        probabilities, prediction = predict_single_image(temp_file_path)
+            # Use the saved file for prediction
+            probabilities, prediction = predict_single_image(temp_file_path)
 
-        # Remove the temporary file after use
-        os.remove(temp_file_path)
+            # Remove the temporary file after use
+            os.remove(temp_file_path)
 
-        return {"filename": file.filename, "prediction": prediction, "probabilities": probabilities.tolist()}
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=str(e))
+            return {"filename": file.filename, "prediction": prediction, "probabilities": probabilities.tolist()}
+        except Exception as e:
+            error_counter.inc()
+            raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/train_model")
