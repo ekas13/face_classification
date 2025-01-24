@@ -8,9 +8,6 @@ data/raw/**/*.jpg
 # test cache
 manual_test/
 
-# other local dev info
-.vscode/
-
 # Mac OS-specific storage files
 .DS_Store
 

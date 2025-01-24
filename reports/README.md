@@ -165,10 +165,34 @@ Why ResNet34?
 > Example:
 > *We used ... for managing our dependencies. The list of dependencies was auto-generated using ... . To get a*
 > *complete copy of our development environment, one would have to run the following commands*
->
-> Answer:
+Answer: Note that in order to be able to run the project locally, integration with Weights & Biases (wandb) and Google cloud is necessary, since the data is accessed from Google Cloud via dvc and logging takes place via wandb.
+We used conda environment with Python 3.11 for managing our dependecies.  The list of dependencies was auto generated using pipreqs.
+To get a obtain a copy of our environment, one would have to run the following commands:
+```bash
+# Clone the repository
+git https://github.com/ekas13/face_classification.git
+cd face_classification
 
---- question 4 fill here ---
+# Create a conda environment with Python 3.11
+pip install invoke==2.2.0 dvc==3.58.0
+invoke create-environment
+invoke requirements
+
+# We use the project in developer mode
+pip install -e .
+
+# Set up your wandb account on https://wandb.ai/, then log in here:
+wandb login
+
+# Set up your google cloud account depending on what platform you are using: https://cloud.google.com/sdk/docs/install. Next, contact us to get access to our project on Google Cloud, so that you can access the data and the services. Then log in here:
+gcloud auth application-default login
+
+# Pull the data
+dvc pull --no-run-cache
+
+# Verify that environment is set up correctly
+pytest tests
+```
 
 ### Question 5
 
@@ -182,9 +206,42 @@ Why ResNet34?
 > *because we did not use any ... in our project. We have added an ... folder that contains ... for running our*
 > *experiments.*
 >
-> Answer:
+From the cookiecutter template we have filled out the following folders and files:
+- `.github/`: GitHub-specific files, including workflows and actions.
+- `configs/`: Configuration files for experiments and training.
+- `data/`: Directory for the dataset in raw and processed format.
+- `dockerfiles/`: Dockerfile definitions for building container images.
+- `models/`: Directory for storing trained models and checkpoints.
+- `reports/`: Generated reports and related files.
+- `src/`: Source code for the project.
+- `tests/`: Unit tests and test-related files.
+- `wandb/`: Weights & Biases logs and configuration files.
+- `./.gitignore`: Specifies files and directories for Git to ignore.
+- `./LICENSE`: Contains the licensing information for the project.
+- `./pyproject.toml`: Configuration file for Python project tools.
+- `./tasks.py`: Contains automation tasks for the project.
+- `./requirements.txt`: Lists main project dependencies.
+- `./.pre-commit-config.yaml`: Configuration for pre-commit hooks.
+- `./.env`: Environment variables for the project.
 
---- question 5 fill here ---
+We have removed the following folders and files:
+- `docs/`: This Readme file serves the purpose of documentation instead.
+- `notebooks/`: We have used Python scripts for our project, because they are better aligned with the course's learning objectives.
+- `./requirements_dev.txt`: Lists development dependencies. All our dependencies were included in the other requirement files, so there was not any need to use this file.
+
+We have added the following folders and files:
+- `cloudbuild/`: Configuration files for Google Cloud Build.
+- `./.dvcignore`: Specifies files and directories for DVC to ignore.
+- `./environment.yaml`: Defines the conda environment and its dependencies.
+- `./requirements_tests.txt`: Lists dependencies required for running tests.
+- `./requirements_frontend.txt`: Lists dependencies required for the frontend.
+- `./.coveragerc`: Configuration file for measuring code coverage.
+- `./.vscode`: It contains the debug configuration.
+
+The overall structure of our repository can be seen here:
+
+![my_image](figures/folder_structure.png)
+
 
 ### Question 6
 
@@ -241,9 +298,7 @@ Linting & Formatting ensure consistency and more importantly make collaboration 
 > *In total we have implemented X tests. Primarily we are testing ... and ... as these the most critical parts of our*
 > *application but also ... .*
 >
-> Answer:
-
---- question 7 fill here ---
+In total, we have implemented 11 tests. Our integration tests check if the backend is available and if it can return a classification result for an image via test client requests. Our performance tests check if the response time of the backend is within a given time interval. Our unit tests check if the data is in the correct format and verify if the model's forward and backward passes are working.
 
 ### Question 8
 
@@ -370,8 +425,20 @@ The usage of hydra make sit easy to reproduce an experiment, as we would only ne
 > *As seen in the second image we are also tracking ... and ...*
 >
 > Answer:
+As seen in the first image, we have tracked training and validation loss as a function of the epochs. As can be seen from the attached image, training and validation loss consistently decrease throughout 10 epochs. Since the validation loss is not higher than the training loss, there is no sign of overfitting.
 
---- question 14 fill here ---
+As illustrated on the accuracy plot, the model reaches almost 100% training and validation accuracy by epoch 6. This is because we were fine-tuning a pretrained ResNet34, which is a relatively advanced model, on a relatively simple dataset.
+
+On top of the above-mentioned metrics, we have logged a confusion matrix. It is noted from the image that the model only had trouble with classifying one image from class 3 in the test set; all other predictions were correct. In order to gain more insight into the training, we have also handpicked a handful of images from the dataset and tracked how the model classifies them epoch by epoch.
+
+The config files and trained models are logged as artifacts to Weights & Biases (wandb) (and to Google Cloud as well), so that results can be reproduced later. We set the seed manually so that the weight initialization can also be reproduced. We have also implemented parameter sweeping with wandb.
+
+![my_image](figures/wandb_loss_plot.png)
+
+![my_image](figures/wandb_accuracy_plot.png)
+
+![my_image](figures/wandb_results.png)
+
 
 ### Question 15
 
@@ -403,9 +470,9 @@ We could build and run our docker images locally or we would build and run them 
 > *run of our main code at some point that showed ...*
 >
 > Answer:
+We have utilized Visual Studio Code's Python Debugger extension to debug the code of our model. In `.vscode/launch.json`, we have specified our configuration to launch a debugger on CPU for the training part of our model. We simply placed breakpoints in the part of the code we wished to inspect. It was really useful to efficiently check if the shape of the tensors was as expected and to gain insight into how the PyTorch Lightning functions and callbacks are used.
 
---- question 16 fill here ---
-
+Additionally, we have used `torch.profiler` to analyze our code and see how its performance could be improved. The profiler options are available in the `train_config.yaml` file. It was interesting to note that 20 percent of the time was spent transferring data between devices when we only trained our model for 1 epoch. If we trained our model for more epochs, this time was not significant. When training on CPU, around 82% of the host self-time was spent on convolution operations, 8% on batch norms, and 5% on max pooling.
 ## Working in the cloud
 
 > In the following section we would like to know more about your experience when developing in the cloud.
@@ -615,8 +682,9 @@ In the end for vertex we added the build and run automatically to a trigger ever
 > *implemented using ...*
 >
 > Answer:
-
---- question 28 fill here ---
+We have implemented a frontend for our API, which is available here: https://frontend-294894715547.europe-west1.run.app/
+Additionally, we used the debugger extension for Visual Studio Code to make the debugging experience easier and more efficient. To achieve this, we had to create a `launch.json` to specify our configuration.
+On top of logging the expected graphs, we have used Weights & Biases to log a confusion matrix and track how the prediction of a few handpicked images changes as the training progresses.
 
 ### Question 29
 
@@ -669,3 +737,13 @@ Student s233576 was responsible for writing configuration files and setting up H
 
 We all worked closely together throughout the project, meeting frequently to collaborate and address any challenges, reviewing pull requests and debating ideas.
 GitHub Copilot was used to help improving our code development process and ChatGPT to assist in debugging code provide suggestions for improvement.
+
+
+Student s232458 was responsible for:
+- Training the model and updating the PyTorch Lightning classes and updating Weights and Biases logging to achieve a smoother integration of the two. This way, it was possible to track the confusion matrix and how the prediction of a few handpicked images progresses.
+- Implementation of profiling with PyTorch to analyze our code.
+- Adding the Visual Studio Code debugger.
+- Creating the initial version of the backend and its corresponding Docker container, which (at this initial state) was deployed to Google Cloud as a service via the UI.
+- The initial deployment process also involved creating a test client to verify if the backend works.
+- Creating the initial version of model inference with ONNX.
+- ChatGPT was used to help with the construction of the debugging configuration and the docker file.
