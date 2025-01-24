@@ -311,10 +311,9 @@ For continuous integration, we use three workflows to handle code formatting, pr
 - **Code formatting**: We use ruff for code formatting and linting, ensuring consistent style across the project. This check is triggered on every push or pull request to the main branch.
 - **Pre-commit**: Using pre-commit, we check for issues that can be automatically fixed before committing changes, such as removing trailing whitespaces and fixing end-of-file newlines. This process is triggered on push and pull request events to the main, helping automate and enforce code quality checks.
 
-Additionally, we integrated two continuous machine learning (CML) workflows for data checking and model testing and deployment.
+Additionally, we integrated a continuous machine learning (CML) workflow for data checking.
 
 - **DVC workflow**: To ensure the integrity of our data, this workflow is triggered by DVC file changes on pull requests to main. It pulls the latest data from GCP and and generates a data statistics report, which is posted as a comment on the pull request.
-- **Check staged model**: For each new model version where the *staging* alias is added, this workflow triggers a test that evaluates its performance. After successful testing, a production alias is added to the model, linking it for deployment.
 
 These CI and CML workflows help ensuring consistent quality, automated checks and an efficient process. They make it easier to catch issues early on, preventing problems from reaching the main branch, and simplify machine learning pipeline integration.
 
@@ -666,4 +665,7 @@ In the end for vertex we added the build and run automatically to a trigger ever
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
+Student s233576 was responsible for writing configuration files and setting up Hydra to manage hyperparameters, set up the continuous integration on the GitHub repository, including caching and testing for multiple operating systems, Python versions, and PyTorch versions, linting and pre-commit hooks, set up continuous machine learning workflows for data and model registry changes.
+
+We all worked closely together throughout the project, meeting frequently to collaborate and address any challenges, reviewing pull requests and debating ideas.
+GitHub Copilot was used to help improving our code development process and ChatGPT to assist in debugging code provide suggestions for improvement.
