@@ -669,7 +669,8 @@ We implemented monitoring using Prometheus, which exposes /metrics api endpoint 
 >
 > Answer:
 
---- question 27 fill here ---
+We ended up using just above 50 dollars of credits, we ran out of credits on the last day and switched to free trial. Because of this, we don't have more precise billing data.
+Working in the cloud was definitely harder than working locally because the error messages in GCP logs are not as precise and much harder to find. It is much easier to get stuck on a small issue for a long time before finding the solution to the problem. On the bright side, training the model and building docker images can be much faster, especially without a GPU.
 
 ### Question 28
 
