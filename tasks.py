@@ -21,15 +21,10 @@ def create_environment(ctx: Context) -> None:
 @task
 def requirements(ctx: Context) -> None:
     """Install project requirements."""
-    ctx.run("pip install -U pip setuptools wheel", echo=True, pty=not WINDOWS)
     ctx.run("pip install -r requirements.txt", echo=True, pty=not WINDOWS)
+    ctx.run("pip install -r requirements_tests.txt", echo=True, pty=not WINDOWS)
+    ctx.run("pip install -r requirements_frontend.txt", echo=True, pty=not WINDOWS)
     ctx.run("pip install -e .", echo=True, pty=not WINDOWS)
-
-
-@task(requirements)
-def dev_requirements(ctx: Context) -> None:
-    """Install development requirements."""
-    ctx.run('pip install -e .["dev"]', echo=True, pty=not WINDOWS)
 
 
 # Project commands
@@ -63,6 +58,18 @@ def test(ctx: Context) -> None:
 
 
 @task
+def server(ctx: Context) -> None:
+    """Run the API server."""
+    ctx.run("uvicorn src.face_classification.api:app --host 0.0.0.0 --port 8000 --reload", echo=True, pty=not WINDOWS)
+
+
+@task
+def frontend(ctx: Context) -> None:
+    """Run the frontend server."""
+    ctx.run("streamlit run src/face_classification/frontend.py --server.port 8080 --server.address=0.0.0.0", echo=True, pty=not WINDOWS)
+
+
+@task
 def docker_build(ctx: Context, progress: str = "plain") -> None:
     """Build docker images."""
     ctx.run(
@@ -73,16 +80,3 @@ def docker_build(ctx: Context, progress: str = "plain") -> None:
     ctx.run(
         f"docker build -t api:latest . -f dockerfiles/api.dockerfile --progress={progress}", echo=True, pty=not WINDOWS
     )
-
-
-# Documentation commands
-@task(dev_requirements)
-def build_docs(ctx: Context) -> None:
-    """Build documentation."""
-    ctx.run("mkdocs build --config-file docs/mkdocs.yaml --site-dir build", echo=True, pty=not WINDOWS)
-
-
-@task(dev_requirements)
-def serve_docs(ctx: Context) -> None:
-    """Serve documentation."""
-    ctx.run("mkdocs serve --config-file docs/mkdocs.yaml", echo=True, pty=not WINDOWS)

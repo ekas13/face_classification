@@ -6,7 +6,6 @@ RUN apt update && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt requirements.txt
-COPY requirements_dev.txt requirements_dev.txt
 COPY src/ src/
 COPY data/ data/
 COPY reports/ reports/
