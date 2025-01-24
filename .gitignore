@@ -186,6 +186,8 @@ lightning_logs/
 
 google-cloud-sdk/
 *.ckpt
+*.onnx
+*.pth
 .gz
 data/raw/
 data/processed/
