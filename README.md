@@ -66,6 +66,9 @@ Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
 a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
 started with Machine Learning Operations (MLOps).
 
+## Images for testing the API
+Whether you run the frontend locally or just access the deployed frontend via its URL, some images from our test dataset are located in the root of our project in a testimages/ directory.
+Make sure to use those images if you want an output of the model to make any sense. 
 ## Where to access the deployed model?
 The model is deployed and hosted on this URL:
 https://app-docker-image-294894715547.europe-west1.run.app
