@@ -273,7 +273,7 @@ Linting & Formatting ensure consistency and more importantly make collaboration 
 >
 > Answer:
 
---- question 9 fill here ---
+We made use of both branches and PRs in our project. Each member created a branch for a specific task or group of related tasks they were working on and occasionally for any fixes related to previously merged code. To merge code into the main branch, we used PRs, each of which required approval from at least one other team member. Before approving, we made sure no conflicts existed, and if there were any, we would merge the main branch into the working branch to resolve them. Once no conflicts existed, we would approve the PR and merge the code into the main branch. This process helped ensure code quality and better collaboration within the team.
 
 ### Question 10
 
@@ -288,8 +288,8 @@ Linting & Formatting ensure consistency and more importantly make collaboration 
 >
 > Answer:
 
-Yes, we used **DVC (Data Version Control)** in our project to manage and access data stored on **Google Cloud Storage (GCS)**.
-By integrating DVC, we were able to: Version control our data to make sure that different experiments used the correct dataset versions, easily access and pull data from Google Cloud Storage which then made collaboration and data sharing across team members efficient and most importantly later when deploying and adding CICD we ensured that our machine learning pipeline has easy access to the data and uses the exact version of it.
+We did make use of **DVC (Data Version Control)** in our project to manage and access data stored on **Google Cloud Storage (GCS)**.
+By integrating DVC, we were able to version control our data, ensuring that different experiments used the correct dataset versions. It also simplified data access, allowing our team to easily pull data from Google Cloud Storage, whic made collaboration and data sharing across team members efficient. Furthermore and most importantly, it later streamlined the deployment process and implementation of CICD, by ensuring that our machine learning pipeline had easy access to the data and used the exact version of it.
 
 ### Question 11
 
@@ -306,7 +306,19 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 >
 > Answer:
 
---- question 11 fill here ---
+For continuous integration, we use three workflows to handle code formatting, pre-commit checks and unit tests.
+- **Unit tests**: This workflow runs tests on multiple operating systems (*ubuntu-latest*, *windows-latest*, *macos-latest*), Python versions (*3.10*, *3.11*, *3.12*) and with different versions of PyTorch (*2.4.0*, *2.5.0*, *2.5.1*). It caches pip dependencies using actions/cache to speed up subsequent runs. In addition, it pulls data from Google Cloud Platform using DVC and runs tests with coverage, ensuring that our code is properly tested across various configurations.
+- **Code formatting**: We use ruff for code formatting and linting, ensuring consistent style across the project. This check is triggered on every push or pull request to the main branch.
+- **Pre-commit**: Using pre-commit, we check for issues that can be automatically fixed before committing changes, such as removing trailing whitespaces and fixing end-of-file newlines. This process is triggered on push and pull request events to the main, helping automate and enforce code quality checks.
+
+Additionally, we integrated a continuous machine learning (CML) workflow for data checking.
+
+- **DVC workflow**: To ensure the integrity of our data, this workflow is triggered by DVC file changes on pull requests to main. It pulls the latest data from GCP and and generates a data statistics report, which is posted as a comment on the pull request.
+
+These CI and CML workflows help ensuring consistent quality, automated checks and an efficient process. They make it easier to catch issues early on, preventing problems from reaching the main branch, and simplify machine learning pipeline integration.
+
+The workflows can be found [here](.github/workflows).
+
 
 ## Running code and tracking experiments
 
@@ -325,7 +337,8 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 >
 > Answer:
 
---- question 12 fill here ---
+
+We used Hydra for experiment configuration. Configurations were stored in a `configs` folder containing `default_config.yaml` and subfolders for model, training, evaluation, and URLs. The `default_config.yaml` file defined default parameters, automatically loaded during execution. Overrides also allow dynamic modifications without altering the base configuration. For instance, running `python train.py --config-name=experiment_config train.epochs=30 model.fine_tuning=False` would allowed Hydra to load the specified configuration file and override settings with the command-line parameters, making it simple to create and adjust configurations for different experiments.
 
 ### Question 13
 
@@ -340,7 +353,8 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 >
 > Answer:
 
---- question 13 fill here ---
+We used config files to ensure reproducibility and consistency in our experiments. For each run, metrics such as training and validation loss and accuracy were logged to WandB, providing detailed insights into the model's performance.
+The usage of hydra make sit easy to reproduce an experiment, as we would only need to retrieve the relevant config file from the experiment logs and use it to rerun the script with identical settings. By keeping all hyperparameters in one place and logging each experiment's progress and artifacts, we made it easier to compare different hyperparameter configurations and ensured consistency in the results between runs. This technique can help reducing variability while preserving all relevant data for future reference.
 
 ### Question 14
 
@@ -651,4 +665,7 @@ In the end for vertex we added the build and run automatically to a trigger ever
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
+Student s233576 was responsible for writing configuration files and setting up Hydra to manage hyperparameters, set up the continuous integration on the GitHub repository, including caching and testing for multiple operating systems, Python versions, and PyTorch versions, linting and pre-commit hooks, set up continuous machine learning workflows for data and model registry changes.
+
+We all worked closely together throughout the project, meeting frequently to collaborate and address any challenges, reviewing pull requests and debating ideas.
+GitHub Copilot was used to help improving our code development process and ChatGPT to assist in debugging code provide suggestions for improvement.
