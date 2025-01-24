@@ -3,13 +3,13 @@ name: Unit Tests
 on:
   push:
     branches:
-      -  master
-      -  main
+      - master
+      - main
 
   pull_request:
     branches:
-      -  master
-      -  main
+      - master
+      - main
 
 jobs:
   test:
@@ -30,7 +30,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-          cache-dependency-path: setup.py
 
       - name: Cache pip dependencies
         uses: actions/cache@v3
@@ -38,7 +37,7 @@ jobs:
           path: ~/.cache/pip
           key: ${{ matrix.operating-system }}-py${{ matrix.python-version }}-pt${{ matrix.torch-version }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            restore-keys: ${{ matrix.operating-system }}-py${{ matrix.python-version }}-pt${{ matrix.torch-version }}-pip-
+            ${{ matrix.operating-system }}-py${{ matrix.python-version }}-pt${{ matrix.torch-version }}-pip-
 
       - name: Install dependencies
         run: |
@@ -60,7 +59,8 @@ jobs:
 
       - name: Run tests & coverage
         env:
-          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }} 
+          PYTHONPATH: src
+          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
         run: |
-          coverage run -m pytest tests/
+          coverage run --source=src/face_classification -m pytest tests/
           coverage report -m

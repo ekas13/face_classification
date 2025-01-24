@@ -1,0 +1,61 @@
+name: Locust Load Testing
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  locust:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Auth with GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements_tests.txt
+        pip install dvc 'dvc[gs]'
+
+    - name: Pull data from GCP (via DVC)
+      run: |
+        dvc pull --no-run-cache
+
+    - name: Extract deployed model URL
+      run: |
+        DEPLOYED_MODEL_URL=$(gcloud run services describe app-docker-image \
+          --region=europe-west1 \
+          --format='value(status.url)')
+        echo "DEPLOYED_MODEL_URL=$DEPLOYED_MODEL_URL" >> $GITHUB_ENV
+
+    - name: Run load test on deployed model
+      env:
+        DEPLOYED_MODEL_URL: ${{ env.DEPLOYED_MODEL_URL }}
+      run: |
+        mkdir -p locust
+        locust -f tests/performancetests/locustfile.py \
+          --headless -u 100 -r 10 --run-time 2m --host=$DEPLOYED_MODEL_URL --csv=locust/results
+
+    - name: Upload locust results
+      uses: actions/upload-artifact@v4
+      with:
+        name: locust
+        path: locust

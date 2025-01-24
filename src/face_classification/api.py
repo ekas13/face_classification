@@ -67,7 +67,6 @@ async def root():
     return {"message": "Backend here!"}
 
 
-@app.get("/predict_single_image")
 def predict_single_image(image_path: str):
     """Predict using ONNX model."""
     # Open and preprocess the image
@@ -110,16 +109,3 @@ async def classify_image(file: UploadFile = File(...)):
             error_counter.inc()
             raise HTTPException(status_code=500, detail=str(e))
 
-
-@app.get("/train_model")
-def train_model():
-    """Train a model on the Face Dataset."""
-    train()
-    return {"message": "Model training completed."}
-
-
-@app.get("/evaluate_model")
-def evaluate_model():
-    """Evaluate a trained model using PyTorch Lightning Trainer."""
-    evaluate()
-    return {"message": "Model evaluation completed."}
