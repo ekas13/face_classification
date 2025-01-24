@@ -495,7 +495,7 @@ Additionally, we have used `torch.profiler` to analyze our code and see how its 
 
 We used the following GCP services in our project:
 
-- **Cloud Storage (Bucket)** – Used for storing datasets, model artifacts, and logs. It provides scalable and secure object storage, ensuring data is easily accessible for training and deployment.
+- **Cloud Storage (Bucket)** – Used for storing datasets, model artifacts, and logs. Also, ensurs data is easily accessible for training and deployment.
 
 - **Cloud Build** – Automates our CI/CD pipeline, enabling us to build, test, and deploy our containerized applications. It's connectd with Cloud Run and Artifact Registry to streamline the deployment process.
 
@@ -505,11 +505,11 @@ We used the following GCP services in our project:
 
 - **Cloud Monitoring** – Tracks the performance of our deployed services, providing metrics, logs, and alerts.
 
-- **Secret Manager** – Secures sensitive information such as API keys (e.g., `WANDB_API_KEY`). It ensures secrets are managed securely and accessed only by authorized services.
+- **Secret Manager** – Secures sensitive information such as API keys (e.g., `WANDB_API_KEY`).
 
 - **IAM & Admin** – Manages permissions and roles, ensuring the correct users and our services have access to our resources while being secure.
 
-- **Vertex AI** – Used for training and deploying machine learning models at scale. It integrates with Cloud Storage and AI pipelines to streamline the ML workflow.
+- **Vertex AI** – Used for training and deploying machine learning models at scale. It integrates with Cloud Storage and AI pipelines for the ML workflow.
 
 ### Question 18
 
@@ -525,8 +525,7 @@ We used the following GCP services in our project:
 > Answer:
 
 We used Google Compute Engine (GCE) to run our machine learning workloads and support various backend services.
-For our project, we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM for the training and evaluating the models pushed to main immediately with Vertex AI. For training and API hosting later, we used n1-standard-4 instances with 4 vCPUs, 16GB RAM, and attached NVIDIA T4 GPUs. Our Compute Engine VMs were integrated with Cloud Storage for dataset management and Vertex AI for model training.
-
+For our project we did two versions of hardware: we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM for the training and evaluating the models pushed to main immediately with Vertex AI. For training and API hosting later, we used n1-standard-4 instances with 4 vCPUs, 16GB RAM, and attached NVIDIA T4 GPUs. Our Compute Engine VMs were integrated with Cloud Storage for dataset management and Vertex AI for model training. The artifact registry kept our created docker files while Vertex AI ran the multiple vm-s.
 ### Question 19
 
 > **Insert 1-2 images of your GCP bucket, such that we can see what data you have stored in it.**
@@ -534,7 +533,7 @@ For our project, we deployed n1-highmem-2 instances with 2 vCPUs and 13GB of RAM
 >
 > Answer:
 
-Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](figures/bucket_2.png) and [cloudbuild bucket](figures/bucket_3.png).
+Our buckets (![buckets](figures/bucket_1.png)) and their contents: ![data bucket](figures/bucket_2.png) and [cloudbuild bucket](figures/bucket_3.png).
 
 ### Question 20
 
@@ -543,7 +542,7 @@ Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](
 >
 > Answer:
 
-[Our repositories](figures/registry_1.png) in Artifact registry and all the different [docker images](figures/registry_2.png) in the group28-repository.
+![Our repositories](figures/registry_1.png) in Artifact registry and all the different ![docker images](figures/registry_2.png) in the group28-repository.
 
 ### Question 21
 
@@ -552,7 +551,7 @@ Our buckets ([buckets](figures/bucket_1.png)) and their contents: [data bucket](
 >
 > Answer:
 
-The extensive [cloud build history](figures/build_1.png) all the triggers have also been added to main and more recent [cloudbuild history](figures/build_2.png).
+The extensive ![cloud build history](figures/build_1.png) all the triggers have also been added to main and more recent ![cloudbuild history](figures/build_2.png).
 
 ### Question 22
 
