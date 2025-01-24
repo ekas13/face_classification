@@ -650,7 +650,7 @@ We performed 2 UNIT tests on the API, one on the root endpoint and another for t
 >
 > Answer:
 
-"vilim's part" - Additionally, we added alerts which monitor the requests sent to our server. A suspicios amount of requests in a certain timeframe trigger automatic alerts to be sent to our email addressed, warning us of this behaviour.
+We implemented monitoring using Prometheus, which exposes /metrics api endpoint for collecting system metrics data, error_counter, request_counter and request_latency. We also managed to create a sidecar which scrapes /metrics endpoint in the cloud, but we did not include it in the final cloud run because it was too complicated to include it in deployment pipeline without manually adjusting the cloud run yaml file. We also implemented an SLO for request latency being more than 150 ms with a target of 90%. Additionally, we added alerts which monitor the requests sent to our server. A suspicios amount of requests in a certain timeframe trigger automatic alerts to be sent to our email addressed, warning us of this behaviour.
 
 ## Overall discussion of project
 
@@ -684,7 +684,8 @@ We performed 2 UNIT tests on the API, one on the root endpoint and another for t
 > *implemented using ...*
 >
 > Answer:
-We have implemented a frontend for our API, which is available here: https://frontend-294894715547.europe-west1.run.app/
+
+We have implemented a frontend for our API, which is available here: https://frontend-294894715547.europe-west1.run.app/. We did this to enable the user to easily upload an image and get a predicted label from the model alongside probabilities for each class label. It was implemented using streamlit library. The backend url was passed using as an environment variable in docker container.
 Additionally, we used the debugger extension for Visual Studio Code to make the debugging experience easier and more efficient. To achieve this, we had to create a `launch.json` to specify our configuration.
 On top of logging the expected graphs, we have used Weights & Biases to log a confusion matrix and track how the prediction of a few handpicked images changes as the training progresses.
 
@@ -739,6 +740,7 @@ Since we did a fairly good seperation of concerns for all of the weeks, differen
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
+Student 243169 was in charge of setting up logging and wandb, running a wandb sweep, developing and deploying frontend and implementing monitoring.
 Student s233576 was responsible for writing configuration files and setting up Hydra to manage hyperparameters, set up the continuous integration on the GitHub repository, including caching and testing for multiple operating systems, Python versions, and PyTorch versions, linting and pre-commit hooks, set up continuous machine learning workflows for data and model registry changes.
 
 We all worked closely together throughout the project, meeting frequently to collaborate and address any challenges, reviewing pull requests and debating ideas.
