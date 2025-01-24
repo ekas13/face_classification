@@ -298,7 +298,9 @@ Linting & Formatting ensure consistency and more importantly make collaboration 
 > *In total we have implemented X tests. Primarily we are testing ... and ... as these the most critical parts of our*
 > *application but also ... .*
 >
-In total, we have implemented 11 tests. Our integration tests check if the backend is available and if it can return a classification result for an image via test client requests. Our performance tests check if the response time of the backend is within a given time interval. Our unit tests check if the data is in the correct format and verify if the model's forward and backward passes are working.
+> Answer:
+
+We have implemented in total 9 UNIT tests which test our model and the training process alongside sanity checks for our data. There are also 2 integration tests for the API which test the root endpoint and the classify endpoint which is the main one used for classifying uploaded images. Finally, we have 1 performance test on the API via Locust which is only run after a merge to the main branch.
 
 ### Question 8
 
@@ -313,7 +315,7 @@ In total, we have implemented 11 tests. Our integration tests check if the backe
 >
 > Answer:
 
---- question 8 fill here ---
+The total code coverage we ended up with was 38%, which includes all of our source python files. It is not close to 100% but testing other stuff to get it to 100% would have been pointless. For example we did not test the preprocess data function in our data.py because we ran it only once and it is not ran in production. If our code had 100% coverage we would not necessarily trust it to be error free, it depends on how that coverage was accomplished. You could cheat to 100% coverage by testing every line of the code without any actual meaningful tests.
 
 ### Question 9
 
@@ -602,7 +604,7 @@ In the end for vertex we added the build and run automatically to a trigger ever
 >
 > Answer:
 
---- question 23 fill here ---
+We wrote an API that utilizes our model's prediction capabilities. The main endpoint, /classify/, classifies an uploaded image and returns the class it belongs to and the probability distribution over all classes. We wrote the API in FastAPI, and loading the model is done using the GCP bucket we have created for it. On the startup, our API downloads the model if it doesnt already exist in its environment, and then is ready to classify images. We also wanted to add an additional endpoint called /evaluate/ which would return the statistics of evaluating the model on a test set. Alas, we did not have enough time for that in the end. We did manage to add some system monitoring by the end on top of what we had.
 
 ### Question 24
 
@@ -633,7 +635,7 @@ We successfully deployed our API both locally and on the cloud using Cloud Run. 
 >
 > Answer:
 
---- question 25 fill here ---
+We performed 2 UNIT tests on the API, one on the root endpoint and another for the /classify/ endpoint. Both checked that the response is in an expected format and with expected values. For Load Testing we used Locust and the result was 13.15 req/s. We set a fixed timer for the Locust test and it ended up not crash our service so we had 0 failures.
 
 ### Question 26
 
@@ -701,7 +703,11 @@ On top of logging the expected graphs, we have used Weights & Biases to log a co
 >
 > Answer:
 
---- question 29 fill here ---
+We start from the local setup. Locally, we can run training or evaluation via invoke commands, alongside setting up the API server and running the frontend for it. For every push to a pull request we run a pre-commit config, a code formatting check with ruff, UNIT tests, code coverage and an integration test.
+We also added Hydra for configs that we use for setting up hyperparameters for model setup, training and the evaluation process.
+Once the PR is merged into main, we have a few triggers from Github and GCP. The Github workflow is the Locust load data test. Triggers from GCP include a Vertex-AI training and a deployment trigger of our API. Both GCP triggers build a docker image that we have in our repo, run it and deploy it. They also do a pull from DVC to get the up to date data. The training in Vertex-AI is synced up with our Weigths & Biases group, so the report of the run is automatically uploaded to Weigths & Biases where we can see a summary of the training process.
+Once the API is deployed we have added some system monitoring that is reporting to the GCP. One thing we did extra was we manually deployed our frontend as well, but without automatizing it (we ran out of time for that). So we have a hosted frontend and the backend, which means users can just go to the link and try out the model.
+![my_image](figures/overview.jpg) 
 
 ### Question 30
 
@@ -715,7 +721,7 @@ On top of logging the expected graphs, we have used Weights & Biases to log a co
 >
 > Answer:
 
---- question 30 fill here ---
+Since we did a fairly good seperation of concerns for all of the weeks, different people struggled with different parts, but the most notable struggle was using the GCP correctly. GCP is an enormous system and getting used to it, understanding what and how it works was the biggest challenge by far. Specifically, we had a lot of issues with setting up various secrets on it and on the Github itself, for building Docker images and deploying them. We tried to not have anything senstive saved in our repo as plain text, or in the code, so that took a lot of time to set up properly. Furthermore, doing any fixes for the .yaml files would take a long time to verify if they worked, which extended working hours way longer than expected at times. We also had some struggles with how to keep a track of metrics in PyTorch Lightning because it was too much of a blackbox, and we almost had to force ourselves to use it just to learn it since it almost proved more cumbersome than worth it in the end. 
 
 ### Question 31
 
@@ -748,3 +754,5 @@ Student s232458 was responsible for:
 - The initial deployment process also involved creating a test client to verify if the backend works.
 - Creating the initial version of model inference with ONNX.
 - ChatGPT was used to help with the construction of the debugging configuration and the docker file.
+
+Student s233025 was in charge of setting up the initial cookiecutter template and evaluation. Furthermore, that same student was in charge of UNIT testing, code coverage, making the FastAPI application with load data testing and integration testing, and creating a trigger to a pipeline for the Locust test in GCP.
