@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Check event type
         run: |
-          echo "Event type: repository_dispatch"
+          echo "Event type: staged_model"
           echo "Payload Data: ${{ toJson(github.event.client_payload) }}"
 
       - name: Setting model environment variable and output
