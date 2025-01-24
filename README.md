@@ -83,8 +83,30 @@ Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
 a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
 started with Machine Learning Operations (MLOps).
 
+## Where to access the deployed model?
+The model is deployed and hosted on this URL:
+https://app-docker-image-294894715547.europe-west1.run.app
 
-## How to run
+The frontned is deployed and hosted on this URL:
+https://frontend-294894715547.europe-west1.run.app/
+
+Use the frontend to interact with the API.
+
+## How to run the model locally
+This was used internally for developing our project. The user must be connected to the GCP group and the Weights & Biases group.
+### Setup the environment
+First we want to create a new conda environment:
+```
+invoke create-environment
+```
+Then, install necessary packages:
+```
+invoke requirements
+```
+Finally, login into the WANDB account:
+```
+wandb login
+```
 ### Fetch raw data from Google Cloud
 Follow this for installation guide of gcloud CLI: https://cloud.google.com/sdk/docs/install (ask Eva or Zeljko if you need help).
 Then install  ```dvc``` with ```pip install dvc```.
@@ -106,4 +128,31 @@ invoke preprocess-data
 ```
 which will create the ```processed``` folder with 3 subfolders in it, ```train```, ```test```,  ```val```. All images in these folders are resized to ```(256, 256)``` so they have a uniform size across the dataset.
 
-### TO BE CONTINUED
+### Train from scratch (Optional)
+If you want to train the model from scratch locally, run this command:
+```
+invoke train
+```
+
+The summary of the training run will be given to you in the console with a link to the Weights & Biases report.
+### Evaluating the model
+To evaluate the model on the test set, run this command:
+```
+invoke evaluate
+```
+
+If you already have the model locally, then run this version:
+```
+invoke evaluate models/model.pth
+```
+
+### Running the API server & the frontend
+Have two terminals open for this part. In the first terminal run the server with this command:
+```
+invoke server
+```
+In the second terminal, start your frontend with this command:
+```
+invoke frontend
+```
+Go to the frontend local URL and try out the API by uploading an image to it. Since the model was trained on 16 different people and it uses their faces to recognize them, for a relevant output upload an image from your data/processed/test folder.

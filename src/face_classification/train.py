@@ -146,10 +146,12 @@ def run_training(cfg, hparams) -> None:
         pytorch_weights_path = "models/model_weights.pth"
         save_pytorch_model_weights(model, best_model_path, pytorch_weights_path)
 
-        # Upload models to GCP
-        bucket_name = "face-classification-models"
-        upload_to_gcs(bucket_name, onnx_model_path, "models/model_final.onnx")
-        upload_to_gcs(bucket_name, pytorch_weights_path, "models/model_weights.pth")
+        try:
+            bucket_name = "face-classification-models"
+            upload_to_gcs(bucket_name, onnx_model_path, "models/model_final.onnx")
+            upload_to_gcs(bucket_name, pytorch_weights_path, "models/model_weights.pth")
+        except Exception as e:
+            print(f"Error uploading to GCS: {e}. Models only saved locally.")
 
         artifact = wandb.Artifact(
             name="face_classification_model",
