@@ -567,7 +567,7 @@ In the end for vertex we added the build and run automatically to a trigger ever
 >
 > Answer:
 
---- question 26 fill here ---
+We implemented monitoring using Prometheus, which exposes /metrics api endpoint for collecting system metrics data, error_counter, request_counter and request_latency. We also managed to create a sidecar which scrapes /metrics endpoint in the cloud, but we did not include it in the final cloud run because it was too complicated to include it in deployment pipeline without manually adjusting the cloud run yaml file. We also implemented an SLO for request latency being more than 150 ms with a target of 90% and 4 email alerts for requests over 2 seconds. We did not implement more advanced metrics, since the ones GCP provides were enough for our project.
 
 ## Overall discussion of project
 
@@ -602,7 +602,7 @@ In the end for vertex we added the build and run automatically to a trigger ever
 >
 > Answer:
 
---- question 28 fill here ---
+We implemented frontend for our API at https://frontend-294894715547.europe-west1.run.app. We did this to enable the user to easily upload an image and get a predicted label from the model alongside probabilities for each class label. It was implemented using streamlit library. The backend url was passed using as an environment variable in docker container. Implementing data drifting was lower on the priority list, so in the end, we had not time to implement it.
 
 ### Question 29
 
@@ -633,7 +633,7 @@ In the end for vertex we added the build and run automatically to a trigger ever
 >
 > Answer:
 
---- question 30 fill here ---
+Vilim: setting up the sidecar container to scrape Prometheus /metrics data because everything had to work perfectly for it to work and it was very hard to debug. The difference between /metrics and /metrics/ was enough to not make things work.
 
 ### Question 31
 
@@ -651,4 +651,4 @@ In the end for vertex we added the build and run automatically to a trigger ever
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
+Vilim: s243169 was in charge of setting up logging and wandb, running a wandb sweep, developing and deploying frontend and implementing monitoring.
