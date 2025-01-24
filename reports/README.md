@@ -165,7 +165,7 @@ Why ResNet34?
 > Example:
 > *We used ... for managing our dependencies. The list of dependencies was auto-generated using ... . To get a*
 > *complete copy of our development environment, one would have to run the following commands*
-Answer: Note that in order to be able to run the project locally, integration with Weights & Biases (wandb) and Google cloud is necessary, since the data is accessed from Google Cloud via dvc and logging takes place via wandb. 
+Answer: Note that in order to be able to run the project locally, integration with Weights & Biases (wandb) and Google cloud is necessary, since the data is accessed from Google Cloud via dvc and logging takes place via wandb.
 We used conda environment with Python 3.11 for managing our dependecies.  The list of dependencies was auto generated using pipreqs.
 To get a obtain a copy of our environment, one would have to run the following commands:
 ```bash
@@ -224,7 +224,7 @@ From the cookiecutter template we have filled out the following folders and file
 - `./.pre-commit-config.yaml`: Configuration for pre-commit hooks.
 - `./.env`: Environment variables for the project.
 
-We have removed the following folders and files: 
+We have removed the following folders and files:
 - `docs/`: This Readme file serves the purpose of documentation instead.
 - `notebooks/`: We have used Python scripts for our project, because they are better aligned with the course's learning objectives.
 - `./requirements_dev.txt`: Lists development dependencies. All our dependencies were included in the other requirement files, so there was not any need to use this file.
