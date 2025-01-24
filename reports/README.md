@@ -638,7 +638,9 @@ We successfully deployed our API both locally and on the cloud using Cloud Run. 
 >
 > Answer:
 
-We performed 2 UNIT tests on the API, one on the root endpoint and another for the /classify/ endpoint. Both checked that the response is in an expected format and with expected values. For Load Testing we used Locust and the result was 13.15 req/s. We set a fixed timer for the Locust test and it ended up not crash our service so we had 0 failures.
+Overall, we had 12 tests for the whole project. Our tests are split into 9 UNIT tests, 2 integration tests on the API (one on the root endpoint and another for the /classify/ endpoint) and 1 peformance test.
+Our UNIT tests were then split into model and data tests, model tests doing checks on the model and the training procedure while data tests just did some sanity checks on the downloaded dataset.
+All API integration tests checked that the response is in an expected format and with expected values. For Load Testing we used Locust and the result was 13.15 req/s. We set a fixed timer for the Locust test and it ended up not crash our service so we had 0 failures.
 
 ### Question 26
 
