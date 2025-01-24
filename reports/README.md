@@ -165,7 +165,9 @@ Why ResNet34?
 > Example:
 > *We used ... for managing our dependencies. The list of dependencies was auto-generated using ... . To get a*
 > *complete copy of our development environment, one would have to run the following commands*
-Answer: Note that in order to be able to run the project locally, integration with Weights & Biases (wandb) and Google cloud is necessary, since the data is accessed from Google Cloud via dvc and logging takes place via wandb.
+>
+> Answer:
+Note that in order to be able to run the project locally, integration with Weights & Biases (wandb) and Google cloud is necessary, since the data is accessed from Google Cloud via dvc and logging takes place via wandb. 
 We used conda environment with Python 3.11 for managing our dependecies.  The list of dependencies was auto generated using pipreqs.
 To get a obtain a copy of our environment, one would have to run the following commands:
 ```bash
@@ -206,6 +208,7 @@ pytest tests
 > *because we did not use any ... in our project. We have added an ... folder that contains ... for running our*
 > *experiments.*
 >
+> Answer:
 From the cookiecutter template we have filled out the following folders and files:
 - `.github/`: GitHub-specific files, including workflows and actions.
 - `configs/`: Configuration files for experiments and training.
