@@ -1,9 +1,8 @@
 import os
 
 import typer
-from omegaconf import OmegaConf
-
 import wandb
+from omegaconf import OmegaConf
 
 
 def link_model(artifact_path: str, aliases: list[str] = ["staging"]) -> None:

@@ -2,8 +2,8 @@ import os
 import time
 
 import torch
-
 import wandb
+
 from face_classification.model import PretrainedResNet34
 
 
