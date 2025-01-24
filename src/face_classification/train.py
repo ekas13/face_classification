@@ -4,7 +4,6 @@ import os
 import hydra
 import torch
 import typer
-import wandb
 from google.cloud import storage
 from omegaconf import OmegaConf
 from pytorch_lightning import Trainer
@@ -12,6 +11,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from torch.profiler import ProfilerActivity, profile, tensorboard_trace_handler
 
+import wandb
 from face_classification.data import FaceDataset
 from face_classification.metric_tracker import MetricTracker
 from face_classification.model import PretrainedResNet34
@@ -52,12 +52,12 @@ def save_pytorch_model_weights(model, checkpoint_path, output_path):
 
 
 @app.command()
-def train(config_name: str = "default_config") -> None:
+def train(config_name: str = "default_config", overrides: list[str] = typer.Argument(None)) -> None:
     """Train a model on the Face Dataset."""
 
     # Initialize Hydra configuration
     with hydra.initialize(config_path="../../configs", version_base=None, job_name="train_model"):
-        cfg = hydra.compose(config_name=config_name)
+        cfg = hydra.compose(config_name=config_name, overrides=overrides)
 
     # Initialize logging
     logger = logging.getLogger(__name__)

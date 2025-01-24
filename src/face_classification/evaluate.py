@@ -26,14 +26,16 @@ def download_from_gcs(bucket_name, source_blob_name, destination_file_name):
 
 
 @app.command()
-def evaluate(model_path: str = None, config_name: str = "default_config") -> None:
+def evaluate(
+    model_path: str = None, config_name: str = "default_config", overrides: list[str] = typer.Argument(None)
+) -> None:
     """Evaluate a trained model using PyTorch Lightning Trainer."""
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
     logger.info(f"Evaluating with model: {model_path}")
 
     with hydra.initialize(config_path="../../configs", version_base=None, job_name="evaluate_model"):
-        cfg = hydra.compose(config_name=config_name)
+        cfg = hydra.compose(config_name=config_name, overrides=overrides)
 
     logger.info(f"Configuration: \n {OmegaConf.to_yaml(cfg)}")
     # Set random seed for reproducibility
