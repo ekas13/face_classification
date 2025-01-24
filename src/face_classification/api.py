@@ -30,6 +30,7 @@ error_counter = Counter("prediction_error", "Number of prediction errors", regis
 request_counter = Counter("prediction_requests", "Number of prediction requests", registry=MY_REGISTRY)
 request_latency = Histogram("prediction_latency_seconds", "Prediction latency in seconds", registry=MY_REGISTRY)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Context manager to start and stop the lifespan events of the FastAPI application."""
@@ -72,7 +73,7 @@ def predict_single_image(image_path: str):
     # Open and preprocess the image
     image = Image.open(image_path).convert("RGB")  # Ensure 3 channels
     image = transform(image)
-    image = image.unsqueeze(0).numpy()  #type: ignore
+    image = image.unsqueeze(0).numpy()  # type: ignore
 
     # Get the input name for the model
     input_name = model.get_inputs()[0].name
@@ -108,4 +109,3 @@ async def classify_image(file: UploadFile = File(...)):
         except Exception as e:
             error_counter.inc()
             raise HTTPException(status_code=500, detail=str(e))
-
