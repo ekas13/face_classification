@@ -52,12 +52,12 @@ def save_pytorch_model_weights(model, checkpoint_path, output_path):
 
 
 @app.command()
-def train(config_name: str = "default_config") -> None:
+def train(config_name: str = "default_config", overrides: list[str] = typer.Argument(None)) -> None:
     """Train a model on the Face Dataset."""
 
     # Initialize Hydra configuration
     with hydra.initialize(config_path="../../configs", version_base=None, job_name="train_model"):
-        cfg = hydra.compose(config_name=config_name)
+        cfg = hydra.compose(config_name=config_name, overrides=overrides)
 
     # Initialize logging
     logger = logging.getLogger(__name__)

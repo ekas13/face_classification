@@ -165,10 +165,34 @@ Why ResNet34?
 > Example:
 > *We used ... for managing our dependencies. The list of dependencies was auto-generated using ... . To get a*
 > *complete copy of our development environment, one would have to run the following commands*
->
-> Answer:
+Answer: Note that in order to be able to run the project locally, integration with Weights & Biases (wandb) and Google cloud is necessary, since the data is accessed from Google Cloud via dvc and logging takes place via wandb.
+We used conda environment with Python 3.11 for managing our dependecies.  The list of dependencies was auto generated using pipreqs.
+To get a obtain a copy of our environment, one would have to run the following commands:
+```bash
+# Clone the repository
+git https://github.com/ekas13/face_classification.git
+cd face_classification
 
---- question 4 fill here ---
+# Create a conda environment with Python 3.11
+pip install invoke==2.2.0 dvc==3.58.0
+invoke create-environment
+invoke requirements
+
+# We use the project in developer mode
+pip install -e .
+
+# Set up your wandb account on https://wandb.ai/, then log in here:
+wandb login
+
+# Set up your google cloud account depending on what platform you are using: https://cloud.google.com/sdk/docs/install. Next, contact us to get access to our project on Google Cloud, so that you can access the data and the services. Then log in here:
+gcloud auth application-default login
+
+# Pull the data
+dvc pull --no-run-cache
+
+# Verify that environment is set up correctly
+pytest tests
+```
 
 ### Question 5
 
@@ -182,9 +206,42 @@ Why ResNet34?
 > *because we did not use any ... in our project. We have added an ... folder that contains ... for running our*
 > *experiments.*
 >
-> Answer:
+From the cookiecutter template we have filled out the following folders and files:
+- `.github/`: GitHub-specific files, including workflows and actions.
+- `configs/`: Configuration files for experiments and training.
+- `data/`: Directory for the dataset in raw and processed format.
+- `dockerfiles/`: Dockerfile definitions for building container images.
+- `models/`: Directory for storing trained models and checkpoints.
+- `reports/`: Generated reports and related files.
+- `src/`: Source code for the project.
+- `tests/`: Unit tests and test-related files.
+- `wandb/`: Weights & Biases logs and configuration files.
+- `./.gitignore`: Specifies files and directories for Git to ignore.
+- `./LICENSE`: Contains the licensing information for the project.
+- `./pyproject.toml`: Configuration file for Python project tools.
+- `./tasks.py`: Contains automation tasks for the project.
+- `./requirements.txt`: Lists main project dependencies.
+- `./.pre-commit-config.yaml`: Configuration for pre-commit hooks.
+- `./.env`: Environment variables for the project.
 
---- question 5 fill here ---
+We have removed the following folders and files:
+- `docs/`: This Readme file serves the purpose of documentation instead.
+- `notebooks/`: We have used Python scripts for our project, because they are better aligned with the course's learning objectives.
+- `./requirements_dev.txt`: Lists development dependencies. All our dependencies were included in the other requirement files, so there was not any need to use this file.
+
+We have added the following folders and files:
+- `cloudbuild/`: Configuration files for Google Cloud Build.
+- `./.dvcignore`: Specifies files and directories for DVC to ignore.
+- `./environment.yaml`: Defines the conda environment and its dependencies.
+- `./requirements_tests.txt`: Lists dependencies required for running tests.
+- `./requirements_frontend.txt`: Lists dependencies required for the frontend.
+- `./.coveragerc`: Configuration file for measuring code coverage.
+- `./.vscode`: It contains the debug configuration.
+
+The overall structure of our repository can be seen here:
+
+![my_image](figures/folder_structure.png)
+
 
 ### Question 6
 
@@ -273,7 +330,7 @@ The total code coverage we ended up with was 38%, which includes all of our sour
 >
 > Answer:
 
---- question 9 fill here ---
+We made use of both branches and PRs in our project. Each member created a branch for a specific task or group of related tasks they were working on and occasionally for any fixes related to previously merged code. To merge code into the main branch, we used PRs, each of which required approval from at least one other team member. Before approving, we made sure no conflicts existed, and if there were any, we would merge the main branch into the working branch to resolve them. Once no conflicts existed, we would approve the PR and merge the code into the main branch. This process helped ensure code quality and better collaboration within the team.
 
 ### Question 10
 
@@ -288,8 +345,8 @@ The total code coverage we ended up with was 38%, which includes all of our sour
 >
 > Answer:
 
-Yes, we used **DVC (Data Version Control)** in our project to manage and access data stored on **Google Cloud Storage (GCS)**.
-By integrating DVC, we were able to: Version control our data to make sure that different experiments used the correct dataset versions, easily access and pull data from Google Cloud Storage which then made collaboration and data sharing across team members efficient and most importantly later when deploying and adding CICD we ensured that our machine learning pipeline has easy access to the data and uses the exact version of it.
+We did make use of **DVC (Data Version Control)** in our project to manage and access data stored on **Google Cloud Storage (GCS)**.
+By integrating DVC, we were able to version control our data, ensuring that different experiments used the correct dataset versions. It also simplified data access, allowing our team to easily pull data from Google Cloud Storage, whic made collaboration and data sharing across team members efficient. Furthermore and most importantly, it later streamlined the deployment process and implementation of CICD, by ensuring that our machine learning pipeline had easy access to the data and used the exact version of it.
 
 ### Question 11
 
@@ -306,7 +363,19 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 >
 > Answer:
 
---- question 11 fill here ---
+For continuous integration, we use three workflows to handle code formatting, pre-commit checks and unit tests.
+- **Unit tests**: This workflow runs tests on multiple operating systems (*ubuntu-latest*, *windows-latest*, *macos-latest*), Python versions (*3.10*, *3.11*, *3.12*) and with different versions of PyTorch (*2.4.0*, *2.5.0*, *2.5.1*). It caches pip dependencies using actions/cache to speed up subsequent runs. In addition, it pulls data from Google Cloud Platform using DVC and runs tests with coverage, ensuring that our code is properly tested across various configurations.
+- **Code formatting**: We use ruff for code formatting and linting, ensuring consistent style across the project. This check is triggered on every push or pull request to the main branch.
+- **Pre-commit**: Using pre-commit, we check for issues that can be automatically fixed before committing changes, such as removing trailing whitespaces and fixing end-of-file newlines. This process is triggered on push and pull request events to the main, helping automate and enforce code quality checks.
+
+Additionally, we integrated a continuous machine learning (CML) workflow for data checking.
+
+- **DVC workflow**: To ensure the integrity of our data, this workflow is triggered by DVC file changes on pull requests to main. It pulls the latest data from GCP and and generates a data statistics report, which is posted as a comment on the pull request.
+
+These CI and CML workflows help ensuring consistent quality, automated checks and an efficient process. They make it easier to catch issues early on, preventing problems from reaching the main branch, and simplify machine learning pipeline integration.
+
+The workflows can be found [here](.github/workflows).
+
 
 ## Running code and tracking experiments
 
@@ -325,7 +394,8 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 >
 > Answer:
 
---- question 12 fill here ---
+
+We used Hydra for experiment configuration. Configurations were stored in a `configs` folder containing `default_config.yaml` and subfolders for model, training, evaluation, and URLs. The `default_config.yaml` file defined default parameters, automatically loaded during execution. Overrides also allow dynamic modifications without altering the base configuration. For instance, running `python train.py --config-name=experiment_config train.epochs=30 model.fine_tuning=False` would allowed Hydra to load the specified configuration file and override settings with the command-line parameters, making it simple to create and adjust configurations for different experiments.
 
 ### Question 13
 
@@ -340,7 +410,8 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 >
 > Answer:
 
---- question 13 fill here ---
+We used config files to ensure reproducibility and consistency in our experiments. For each run, metrics such as training and validation loss and accuracy were logged to WandB, providing detailed insights into the model's performance.
+The usage of hydra make sit easy to reproduce an experiment, as we would only need to retrieve the relevant config file from the experiment logs and use it to rerun the script with identical settings. By keeping all hyperparameters in one place and logging each experiment's progress and artifacts, we made it easier to compare different hyperparameter configurations and ensured consistency in the results between runs. This technique can help reducing variability while preserving all relevant data for future reference.
 
 ### Question 14
 
@@ -356,8 +427,20 @@ By integrating DVC, we were able to: Version control our data to make sure that 
 > *As seen in the second image we are also tracking ... and ...*
 >
 > Answer:
+As seen in the first image, we have tracked training and validation loss as a function of the epochs. As can be seen from the attached image, training and validation loss consistently decrease throughout 10 epochs. Since the validation loss is not higher than the training loss, there is no sign of overfitting.
 
---- question 14 fill here ---
+As illustrated on the accuracy plot, the model reaches almost 100% training and validation accuracy by epoch 6. This is because we were fine-tuning a pretrained ResNet34, which is a relatively advanced model, on a relatively simple dataset.
+
+On top of the above-mentioned metrics, we have logged a confusion matrix. It is noted from the image that the model only had trouble with classifying one image from class 3 in the test set; all other predictions were correct. In order to gain more insight into the training, we have also handpicked a handful of images from the dataset and tracked how the model classifies them epoch by epoch.
+
+The config files and trained models are logged as artifacts to Weights & Biases (wandb) (and to Google Cloud as well), so that results can be reproduced later. We set the seed manually so that the weight initialization can also be reproduced. We have also implemented parameter sweeping with wandb.
+
+![my_image](figures/wandb_loss_plot.png)
+
+![my_image](figures/wandb_accuracy_plot.png)
+
+![my_image](figures/wandb_results.png)
+
 
 ### Question 15
 
@@ -389,9 +472,9 @@ We could build and run our docker images locally or we would build and run them 
 > *run of our main code at some point that showed ...*
 >
 > Answer:
+We have utilized Visual Studio Code's Python Debugger extension to debug the code of our model. In `.vscode/launch.json`, we have specified our configuration to launch a debugger on CPU for the training part of our model. We simply placed breakpoints in the part of the code we wished to inspect. It was really useful to efficiently check if the shape of the tensors was as expected and to gain insight into how the PyTorch Lightning functions and callbacks are used.
 
---- question 16 fill here ---
-
+Additionally, we have used `torch.profiler` to analyze our code and see how its performance could be improved. The profiler options are available in the `train_config.yaml` file. It was interesting to note that 20 percent of the time was spent transferring data between devices when we only trained our model for 1 epoch. If we trained our model for more epochs, this time was not significant. When training on CPU, around 82% of the host self-time was spent on convolution operations, 8% on batch norms, and 5% on max pooling.
 ## Working in the cloud
 
 > In the following section we would like to know more about your experience when developing in the cloud.
@@ -601,8 +684,9 @@ We performed 2 UNIT tests on the API, one on the root endpoint and another for t
 > *implemented using ...*
 >
 > Answer:
-
---- question 28 fill here ---
+We have implemented a frontend for our API, which is available here: https://frontend-294894715547.europe-west1.run.app/
+Additionally, we used the debugger extension for Visual Studio Code to make the debugging experience easier and more efficient. To achieve this, we had to create a `launch.json` to specify our configuration.
+On top of logging the expected graphs, we have used Weights & Biases to log a confusion matrix and track how the prediction of a few handpicked images changes as the training progresses.
 
 ### Question 29
 

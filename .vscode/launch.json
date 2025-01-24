@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Train Face Classification",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/face_classification/train.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}
