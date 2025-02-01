@@ -167,7 +167,7 @@ Why ResNet34?
 > *complete copy of our development environment, one would have to run the following commands*
 >
 > Answer:
-Note that in order to be able to run the project locally, integration with Weights & Biases (wandb) and Google cloud is necessary, since the data is accessed from Google Cloud via dvc and logging takes place via wandb. 
+Note that in order to be able to run the project locally, integration with Weights & Biases (wandb) and Google cloud is necessary, since the data is accessed from Google Cloud via dvc and logging takes place via wandb.
 We used conda environment with Python 3.11 for managing our dependecies.  The list of dependencies was auto generated using pipreqs.
 To get a obtain a copy of our environment, one would have to run the following commands:
 ```bash
@@ -711,7 +711,7 @@ We start from the local setup. Locally, we can run training or evaluation via in
 We also added Hydra for configs that we use for setting up hyperparameters for model setup, training and the evaluation process.
 Once the PR is merged into main, we have a few triggers from Github and GCP. The Github workflow is the Locust load data test. Triggers from GCP include a Vertex-AI training and a deployment trigger of our API. Both GCP triggers build a docker image that we have in our repo, run it and deploy it. They also do a pull from DVC to get the up to date data. The training in Vertex-AI is synced up with our Weigths & Biases group, so the report of the run is automatically uploaded to Weigths & Biases where we can see a summary of the training process.
 Once the API is deployed we have added some system monitoring that is reporting to the GCP. One thing we did extra was we manually deployed our frontend as well, but without automatizing it (we ran out of time for that). So we have a hosted frontend and the backend, which means users can just go to the link and try out the model.
-![my_image](figures/overview.jpg) 
+![my_image](figures/overview.jpg)
 
 ### Question 30
 
@@ -725,7 +725,7 @@ Once the API is deployed we have added some system monitoring that is reporting 
 >
 > Answer:
 
-Since we did a fairly good seperation of concerns for all of the weeks, different people struggled with different parts, but the most notable struggle was using the GCP correctly. GCP is an enormous system and getting used to it, understanding what and how it works was the biggest challenge by far. Specifically, we had a lot of issues with setting up various secrets on it and on the Github itself, for building Docker images and deploying them. We tried to not have anything senstive saved in our repo as plain text, or in the code, so that took a lot of time to set up properly. Furthermore, doing any fixes for the .yaml files would take a long time to verify if they worked, which extended working hours way longer than expected at times. We also had some struggles with how to keep a track of metrics in PyTorch Lightning because it was too much of a blackbox, and we almost had to force ourselves to use it just to learn it since it almost proved more cumbersome than worth it in the end. 
+Since we did a fairly good seperation of concerns for all of the weeks, different people struggled with different parts, but the most notable struggle was using the GCP correctly. GCP is an enormous system and getting used to it, understanding what and how it works was the biggest challenge by far. Specifically, we had a lot of issues with setting up various secrets on it and on the Github itself, for building Docker images and deploying them. We tried to not have anything senstive saved in our repo as plain text, or in the code, so that took a lot of time to set up properly. Furthermore, doing any fixes for the .yaml files would take a long time to verify if they worked, which extended working hours way longer than expected at times. We also had some struggles with how to keep a track of metrics in PyTorch Lightning because it was too much of a blackbox, and we almost had to force ourselves to use it just to learn it since it almost proved more cumbersome than worth it in the end.
 Another challenge was setting up the ML workflow to trigger on adding the "staging" alias to the model. We created the webhook on W&B, wrote the GitHub Actions workflow (stage_model.yaml), model performance test, and the link_model.py script ([M19_continuous_workflows](https://github.com/ekas13/face_classification/tree/M19_continuous_workflows) branch). . However, the action wasn't triggered when the alias was added to a model version in the model registry. We tried to fix it by validating payloads, testing the webhook setup, and debugging the workflow, but couldn't resolve the issue.
 ### Question 31
 
