@@ -32,7 +32,7 @@ jobs:
           cache: 'pip'
 
       - name: Cache pip dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ matrix.operating-system }}-py${{ matrix.python-version }}-pt${{ matrix.torch-version }}-pip-${{ hashFiles('**/requirements.txt') }}
