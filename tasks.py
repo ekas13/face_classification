@@ -66,7 +66,11 @@ def server(ctx: Context) -> None:
 @task
 def frontend(ctx: Context) -> None:
     """Run the frontend server."""
-    ctx.run("streamlit run src/face_classification/frontend.py --server.port 8080 --server.address=0.0.0.0", echo=True, pty=not WINDOWS)
+    ctx.run(
+        "streamlit run src/face_classification/frontend.py --server.port 8080 --server.address=0.0.0.0",
+        echo=True,
+        pty=not WINDOWS,
+    )
 
 
 @task
